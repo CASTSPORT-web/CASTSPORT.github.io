@@ -1,283 +1,337 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>CASTSPORT - Pedido de Uniformes</title>
+<title>CASTSPORT - Pedidos de Uniformes</title>
 
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-        body {
-            font-family: Arial, sans-serif;
-            background: #f4f6f8;
-            color: #222;
-            padding: 20px;
-        }
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+    padding: 14px;
+}
 
-        .contenedor {
-            max-width: 1000px;
-            margin: auto;
-        }
+.contenedor {
+    max-width: 1000px;
+    margin: auto;
+}
 
-        .encabezado {
-            background: #111;
-            color: white;
-            padding: 30px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            text-align: center;
-        }
+.encabezado {
+    background: #111;
+    color: white;
+    padding: 22px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 14px;
+}
 
-        .encabezado h1 {
-            font-size: 36px;
-            margin-bottom: 8px;
-        }
+.encabezado h1 {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
 
-        .encabezado p {
-            color: #ccc;
-        }
+.encabezado p {
+    font-size: 13px;
+}
 
-        .tarjeta {
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 3px 12px rgba(0,0,0,0.08);
-        }
+.tarjeta {
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
 
-        .tarjeta h2 {
-            margin-bottom: 20px;
-        }
+.titulo {
+    font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 14px;
+}
 
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-        }
+.formulario {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
 
-        .campo {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+.campo label {
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
 
-        .campo label {
-            font-weight: bold;
-            font-size: 14px;
-        }
+input,
+select,
+textarea {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
+    background: white;
+}
 
-        .campo input,
-        .campo select {
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 16px;
-        }
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
 
-        .jugador {
-            display: grid;
-            grid-template-columns: 70px 1fr 120px 50px;
-            gap: 10px;
-            margin-bottom: 12px;
-            align-items: center;
-        }
+.lista {
+    width: 100%;
+}
 
-        .jugador input,
-        .jugador select {
-            width: 100%;
-            padding: 11px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 15px;
-        }
+.fila {
+    display: grid;
+    grid-template-columns: 70px 1fr 115px 100px 40px;
+    gap: 7px;
+    margin-bottom: 7px;
+    align-items: center;
+}
 
-        .btn-eliminar {
-            background: #dc3545;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            height: 42px;
-            cursor: pointer;
-            font-size: 18px;
-        }
+.fila input,
+.fila select {
+    height: 35px;
+}
 
-        .btn-agregar {
-            width: 100%;
-            padding: 13px;
-            background: #111;
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
+.genero {
+    font-weight: bold;
+    text-align: center;
+    transition: background 0.2s;
+}
 
-        .btn-agregar:hover {
-            background: #333;
-        }
+.genero-f {
+    background: #ffd9e6 !important;
+}
 
-        .resumen {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: #f0f2f4;
-            padding: 18px;
-            border-radius: 10px;
-            margin-top: 20px;
-        }
+.genero-m {
+    background: #d8efff !important;
+}
 
-        .total {
-            font-size: 20px;
-            font-weight: bold;
-        }
+.boton-agregar {
+    width: 100%;
+    border: none;
+    background: #111;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 5px;
+}
 
-        .btn-enviar {
-            width: 100%;
-            padding: 16px;
-            background: #198754;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 20px;
-        }
+.boton-agregar:hover {
+    background: #222;
+}
 
-        .btn-enviar:hover {
-            background: #146c43;
-        }
+.boton-eliminar {
+    border: none;
+    background: #dc3545;
+    color: white;
+    height: 35px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
 
-        textarea {
-            width: 100%;
-            min-height: 100px;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            font-size: 15px;
-            resize: vertical;
-        }
+.total {
+    margin-top: 14px;
+    background: #edf1f5;
+    padding: 11px;
+    border-radius: 7px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
 
-        @media (max-width: 700px) {
+.boton-generar,
+.boton-descargar {
+    width: 100%;
+    border: none;
+    color: white;
+    padding: 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
 
-            body {
-                padding: 10px;
-            }
+.boton-generar {
+    background: #198754;
+}
 
-            .encabezado h1 {
-                font-size: 28px;
-            }
+.boton-generar:hover {
+    background: #157347;
+}
 
-            .grid {
-                grid-template-columns: 1fr;
-            }
+.boton-descargar {
+    background: #2864e6;
+}
 
-            .jugador {
-                grid-template-columns: 1fr;
-            }
+.boton-descargar:hover {
+    background: #1d4fc0;
+}
 
-            .btn-eliminar {
-                width: 100%;
-            }
+.pie {
+    background: #111;
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    margin-top: 10px;
+}
 
-            .resumen {
-                flex-direction: column;
-                gap: 10px;
-                text-align: center;
-            }
-        }
-    </style>
+.pie h2 {
+    font-size: 21px;
+    margin-bottom: 4px;
+}
+
+.pie p {
+    font-size: 11px;
+}
+
+/* En pantallas pequeñas */
+@media (max-width: 700px) {
+
+    .formulario {
+        grid-template-columns: 1fr;
+    }
+
+    .fila {
+        grid-template-columns: 55px 1fr 90px 75px 35px;
+        gap: 5px;
+    }
+
+    .fila input,
+    .fila select,
+    .boton-eliminar {
+        font-size: 11px;
+    }
+}
+</style>
 </head>
 
 <body>
 
 <div class="contenedor">
 
+    <!-- ENCABEZADO -->
     <div class="encabezado">
         <h1>CASTSPORT</h1>
         <p>Sistema de pedidos y personalización de uniformes</p>
     </div>
 
+    <!-- DATOS DEL EQUIPO -->
     <div class="tarjeta">
 
-        <h2>📋 Datos del equipo</h2>
+        <div class="titulo">
+            📋 Datos del equipo
+        </div>
 
-        <div class="grid">
+        <div class="formulario">
 
             <div class="campo">
                 <label>Nombre del equipo</label>
-                <input type="text" id="equipo" placeholder="Ejemplo: Fénix FC">
+                <input
+                    type="text"
+                    id="equipo"
+                    placeholder="Nombre del equipo">
             </div>
 
             <div class="campo">
                 <label>Nombre del encargado</label>
-                <input type="text" id="encargado" placeholder="Nombre completo">
+                <input
+                    type="text"
+                    id="encargado"
+                    placeholder="Nombre del encargado">
             </div>
 
             <div class="campo">
                 <label>Teléfono / WhatsApp</label>
-                <input type="tel" id="telefono" placeholder="999 999 999">
+                <input
+                    type="text"
+                    id="telefono"
+                    placeholder="Número de teléfono">
             </div>
 
             <div class="campo">
                 <label>Tipo de uniforme</label>
-                <select id="uniforme">
-                    <option value="Camiseta">Camiseta</option>
-                    <option value="Camiseta + Short">Camiseta + Short</option>
-                    <option value="Conjunto completo">Conjunto completo</option>
+                <select id="tipoUniforme">
+                    <option>Camiseta</option>
+                    <option>Conjunto</option>
+                    <option>Uniforme completo</option>
                 </select>
             </div>
 
         </div>
-
     </div>
 
 
+    <!-- LISTA DE CAMISETAS -->
     <div class="tarjeta">
 
-        <h2>👕 Lista de camisetas</h2>
-
-        <div id="listaJugadores">
-
+        <div class="titulo">
+            👕 Lista de camisetas
         </div>
 
-        <button class="btn-agregar" onclick="agregarJugador()">
+        <div id="listaCamisetas" class="lista"></div>
+
+        <button
+            type="button"
+            class="boton-agregar"
+            onclick="agregarCamiseta()">
             + Agregar camiseta
         </button>
 
-        <div class="resumen">
-
-            <div>
-                Total de camisetas
-            </div>
-
-            <div class="total" id="total">
-                0
-            </div>
-
+        <div class="total">
+            <span>Total de camisetas</span>
+            <strong id="total">0</strong>
         </div>
 
     </div>
 
 
+    <!-- OBSERVACIONES -->
     <div class="tarjeta">
 
-        <h2>📝 Observaciones</h2>
+        <div class="titulo">
+            📝 Observaciones
+        </div>
 
-        <textarea id="observaciones"
-            placeholder="Escribe aquí cualquier detalle especial del pedido..."></textarea>
+        <textarea
+            id="observaciones"
+            placeholder="Escribe aquí alguna observación del pedido..."></textarea>
 
-        <button class="btn-enviar" onclick="generarPedido()">
-            ✅ Generar pedido
+        <button
+            type="button"
+            class="boton-generar"
+            onclick="generarPedido()">
+            ☑ Generar pedido
         </button>
 
+        <button
+            type="button"
+            class="boton-descargar"
+            onclick="descargarPedido()">
+            📥 Descargar pedido
+        </button>
+
+    </div>
+
+
+    <!-- PIE -->
+    <div class="pie">
+        <h2>CASTSPORT</h2>
+        <p>Sistema de pedidos y personalización de uniformes</p>
     </div>
 
 </div>
@@ -285,125 +339,312 @@
 
 <script>
 
-    let contador = 0;
+const tallas = [
+    "4",
+    "6",
+    "8",
+    "10",
+    "12",
+    "14",
+    "16",
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "XXL"
+];
+
+let contador = 0;
 
 
-    function agregarJugador() {
+/* AGREGAR CAMISETA */
+function agregarCamiseta(
+    numero = "",
+    nombre = "",
+    talla = "",
+    genero = ""
+) {
 
-        contador++;
+    contador++;
 
-        const lista = document.getElementById("listaJugadores");
+    const lista = document.getElementById("listaCamisetas");
 
-        const jugador = document.createElement("div");
+    const fila = document.createElement("div");
 
-        jugador.className = "jugador";
+    fila.className = "fila";
 
-        jugador.innerHTML = `
+    fila.innerHTML = `
 
-            <input
-                type="number"
-                placeholder="Nº"
-                class="numero"
-                min="0"
-                max="99"
-            >
+        <input
+            type="text"
+            class="numero"
+            placeholder="Nº"
+            value="${numero}">
 
-            <input
-                type="text"
-                placeholder="Nombre"
-                class="nombre"
-            >
+        <input
+            type="text"
+            class="nombre"
+            placeholder="Nombre"
+            value="${nombre}">
 
-            <select class="talla">
+        <select class="talla">
 
-                <option value="">Talla</option>
-                <option value="2">2</option>
-                <option value="4">4</option>
-                <option value="6">6</option>
-                <option value="8">8</option>
-                <option value="10">10</option>
-                <option value="12">12</option>
-                <option value="14">14</option>
-                <option value="16">16</option>
-                <option value="S">S</option>
-                <option value="M">M</option>
-                <option value="L">L</option>
-                <option value="XL">XL</option>
-                <option value="XXL">XXL</option>
+            <option value="">Talla</option>
 
-            </select>
+            ${tallas.map(t =>
+                `<option value="${t}" ${t === talla ? "selected" : ""}>
+                    ${t}
+                </option>`
+            ).join("")}
 
-            <button
-                class="btn-eliminar"
-                onclick="eliminarJugador(this)">
-                ×
-            </button>
+        </select>
 
-        `;
+        <select
+            class="genero ${genero === "F" ? "genero-f" : genero === "M" ? "genero-m" : ""}"
+            onchange="cambiarGenero(this)">
 
-        lista.appendChild(jugador);
+            <option value="">Género</option>
+            <option value="F" ${genero === "F" ? "selected" : ""}>F</option>
+            <option value="M" ${genero === "M" ? "selected" : ""}>M</option>
 
-        actualizarTotal();
+        </select>
+
+        <button
+            type="button"
+            class="boton-eliminar"
+            onclick="eliminarCamiseta(this)">
+            ×
+        </button>
+    `;
+
+    lista.appendChild(fila);
+
+    actualizarTotal();
+}
+
+
+/* CAMBIAR COLOR SEGÚN GÉNERO */
+function cambiarGenero(select) {
+
+    select.classList.remove("genero-f");
+    select.classList.remove("genero-m");
+
+    if (select.value === "F") {
+        select.classList.add("genero-f");
     }
 
+    if (select.value === "M") {
+        select.classList.add("genero-m");
+    }
+}
 
-    function eliminarJugador(boton) {
 
-        boton.parentElement.remove();
+/* ELIMINAR */
+function eliminarCamiseta(boton) {
 
-        actualizarTotal();
+    boton.parentElement.remove();
+
+    actualizarTotal();
+}
+
+
+/* ACTUALIZAR TOTAL */
+function actualizarTotal() {
+
+    const filas = document.querySelectorAll(".fila");
+
+    document.getElementById("total").textContent = filas.length;
+}
+
+
+/* GENERAR PEDIDO */
+function generarPedido() {
+
+    const equipo =
+        document.getElementById("equipo").value;
+
+    const encargado =
+        document.getElementById("encargado").value;
+
+    const telefono =
+        document.getElementById("telefono").value;
+
+    const tipo =
+        document.getElementById("tipoUniforme").value;
+
+    const observaciones =
+        document.getElementById("observaciones").value;
+
+    const filas =
+        document.querySelectorAll(".fila");
+
+    if (!equipo.trim()) {
+        alert("Por favor, escribe el nombre del equipo.");
+        return;
     }
 
-
-    function actualizarTotal() {
-
-        const jugadores =
-            document.querySelectorAll(".jugador").length;
-
-        document.getElementById("total").textContent = jugadores;
+    if (filas.length === 0) {
+        alert("Agrega al menos una camiseta.");
+        return;
     }
 
+    let pedido = "";
 
-    function generarPedido() {
+    pedido += "CASTSPORT\n";
+    pedido += "==============================\n\n";
 
-        const equipo =
-            document.getElementById("equipo").value;
+    pedido += "DATOS DEL EQUIPO\n";
+    pedido += "Equipo: " + equipo + "\n";
+    pedido += "Encargado: " + encargado + "\n";
+    pedido += "Teléfono: " + telefono + "\n";
+    pedido += "Tipo de uniforme: " + tipo + "\n\n";
 
-        const encargado =
-            document.getElementById("encargado").value;
+    pedido += "LISTA DE CAMISETAS\n";
+    pedido += "==============================\n";
 
-        const telefono =
-            document.getElementById("telefono").value;
+    filas.forEach((fila, index) => {
 
-        const jugadores =
-            document.querySelectorAll(".jugador");
+        const numero =
+            fila.querySelector(".numero").value;
 
-        if (!equipo || !encargado || !telefono) {
+        const nombre =
+            fila.querySelector(".nombre").value;
 
-            alert("Por favor completa los datos del equipo.");
+        const talla =
+            fila.querySelector(".talla").value;
 
-            return;
-        }
+        const genero =
+            fila.querySelector(".genero").value;
 
-        if (jugadores.length === 0) {
+        pedido +=
+            (index + 1) +
+            ". Nº: " + numero +
+            " | Nombre: " + nombre +
+            " | Talla: " + talla +
+            " | Género: " + genero +
+            "\n";
+    });
 
-            alert("Agrega por lo menos una camiseta.");
+    pedido += "\n";
+    pedido += "Total de camisetas: " + filas.length + "\n\n";
 
-            return;
-        }
+    pedido += "OBSERVACIONES\n";
+    pedido += observaciones || "Sin observaciones";
+    pedido += "\n";
 
-        alert(
-            "¡Pedido generado correctamente!\\n\\n" +
-            "Equipo: " + equipo + "\\n" +
-            "Encargado: " + encargado + "\\n" +
-            "Camisetas: " + jugadores.length
-        );
+    alert(pedido);
+}
 
+
+/* DESCARGAR PEDIDO */
+function descargarPedido() {
+
+    const equipo =
+        document.getElementById("equipo").value || "Sin nombre";
+
+    const encargado =
+        document.getElementById("encargado").value || "";
+
+    const telefono =
+        document.getElementById("telefono").value || "";
+
+    const tipo =
+        document.getElementById("tipoUniforme").value;
+
+    const observaciones =
+        document.getElementById("observaciones").value || "Sin observaciones";
+
+    const filas =
+        document.querySelectorAll(".fila");
+
+    if (filas.length === 0) {
+        alert("Agrega al menos una camiseta antes de descargar.");
+        return;
     }
 
+    let contenido = "";
 
-    // Agregamos una camiseta automáticamente
-    agregarJugador();
+    contenido += "CASTSPORT\n";
+    contenido += "SISTEMA DE PEDIDOS Y PERSONALIZACIÓN DE UNIFORMES\n";
+    contenido += "===============================================\n\n";
+
+    contenido += "DATOS DEL EQUIPO\n";
+    contenido += "-----------------------------------------------\n";
+    contenido += "Nombre del equipo: " + equipo + "\n";
+    contenido += "Nombre del encargado: " + encargado + "\n";
+    contenido += "Teléfono / WhatsApp: " + telefono + "\n";
+    contenido += "Tipo de uniforme: " + tipo + "\n\n";
+
+    contenido += "LISTA DE CAMISETAS\n";
+    contenido += "-----------------------------------------------\n";
+
+    filas.forEach((fila, index) => {
+
+        const numero =
+            fila.querySelector(".numero").value;
+
+        const nombre =
+            fila.querySelector(".nombre").value;
+
+        const talla =
+            fila.querySelector(".talla").value;
+
+        const genero =
+            fila.querySelector(".genero").value;
+
+        contenido +=
+            (index + 1) +
+            ". Nº: " + numero +
+            " | Nombre: " + nombre +
+            " | Talla: " + talla +
+            " | Género: " + genero +
+            "\n";
+    });
+
+    contenido += "\n";
+    contenido += "Total de camisetas: " + filas.length + "\n\n";
+
+    contenido += "OBSERVACIONES\n";
+    contenido += "-----------------------------------------------\n";
+    contenido += observaciones + "\n\n";
+
+    contenido += "===============================================\n";
+    contenido += "CASTSPORT\n";
+
+
+    const archivo = new Blob(
+        [contenido],
+        { type: "text/plain;charset=utf-8" }
+    );
+
+    const url =
+        URL.createObjectURL(archivo);
+
+    const enlace =
+        document.createElement("a");
+
+    enlace.href = url;
+
+    enlace.download =
+        "pedido-" +
+        equipo.replace(/[^a-z0-9]/gi, "-") +
+        ".txt";
+
+    document.body.appendChild(enlace);
+
+    enlace.click();
+
+    document.body.removeChild(enlace);
+
+    URL.revokeObjectURL(url);
+}
+
+
+/* CREAR 3 FILAS AL ABRIR */
+agregarCamiseta();
+agregarCamiseta();
+agregarCamiseta();
 
 </script>
 
