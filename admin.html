@@ -1,0 +1,1715 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+<title>CASTSPORT - Administración</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+
+/* =========================================================
+   GENERAL
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+
+    font-family: Arial, sans-serif;
+
+    background: #f4f6f8;
+
+    color: #222;
+
+    padding: 20px;
+
+}
+
+.contenedor {
+
+    max-width: 1100px;
+
+    margin: auto;
+
+}
+
+
+/* =========================================================
+   ENCABEZADO
+   ========================================================= */
+
+.encabezado {
+
+    background: #111;
+
+    color: white;
+
+    padding: 24px;
+
+    border-radius: 12px;
+
+    text-align: center;
+
+    margin-bottom: 18px;
+
+}
+
+.encabezado h1 {
+
+    font-size: 28px;
+
+    margin-bottom: 5px;
+
+}
+
+.encabezado p {
+
+    font-size: 13px;
+
+    color: #ccc;
+
+}
+
+
+/* =========================================================
+   BARRA DE CONTROL
+   ========================================================= */
+
+.control {
+
+    background: white;
+
+    padding: 14px;
+
+    border-radius: 12px;
+
+    margin-bottom: 18px;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 10px;
+
+}
+
+.control-info {
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+}
+
+.botones {
+
+    display: flex;
+
+    gap: 8px;
+
+}
+
+.boton {
+
+    border: none;
+
+    border-radius: 7px;
+
+    padding: 9px 14px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+
+    color: white;
+
+}
+
+.boton-actualizar {
+
+    background: #111;
+
+}
+
+.boton-salir {
+
+    background: #dc3545;
+
+}
+
+.boton:hover {
+
+    opacity: .85;
+
+}
+
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+
+.estado {
+
+    display: none;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    margin-bottom: 15px;
+
+    font-weight: bold;
+
+    text-align: center;
+
+}
+
+.estado.exito {
+
+    display: block;
+
+    background: #d1e7dd;
+
+    color: #0f5132;
+
+}
+
+.estado.error {
+
+    display: block;
+
+    background: #f8d7da;
+
+    color: #842029;
+
+}
+
+.estado.cargando {
+
+    display: block;
+
+    background: #cff4fc;
+
+    color: #055160;
+
+}
+
+
+/* =========================================================
+   LISTA DE PEDIDOS
+   ========================================================= */
+
+.lista-pedidos {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+}
+
+
+/* =========================================================
+   PEDIDO
+   ========================================================= */
+
+.pedido {
+
+    background: white;
+
+    border-radius: 12px;
+
+    overflow: hidden;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   CABECERA DEL PEDIDO
+   ========================================================= */
+
+.pedido-cabecera {
+
+    background: #111;
+
+    color: white;
+
+    padding: 15px 18px;
+
+    cursor: pointer;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    align-items: center;
+
+    gap: 15px;
+
+}
+
+.pedido-cabecera:hover {
+
+    background: #1c1c1c;
+
+}
+
+.pedido-titulo {
+
+    font-size: 16px;
+
+    font-weight: bold;
+
+}
+
+.pedido-subtitulo {
+
+    margin-top: 4px;
+
+    font-size: 12px;
+
+    color: #ccc;
+
+}
+
+.flecha {
+
+    font-size: 20px;
+
+    transition: transform .2s;
+
+}
+
+.pedido.abierto .flecha {
+
+    transform: rotate(180deg);
+
+}
+
+
+/* =========================================================
+   CONTENIDO
+   ========================================================= */
+
+.pedido-contenido {
+
+    display: none;
+
+    padding: 18px;
+
+}
+
+.pedido.abierto .pedido-contenido {
+
+    display: block;
+
+}
+
+
+/* =========================================================
+   DATOS DEL EQUIPO
+   ========================================================= */
+
+.seccion-titulo {
+
+    font-size: 17px;
+
+    font-weight: bold;
+
+    margin-bottom: 12px;
+
+}
+
+.datos {
+
+    display: grid;
+
+    grid-template-columns: 1fr 1fr;
+
+    gap: 10px;
+
+    margin-bottom: 20px;
+
+}
+
+.dato {
+
+    background: #f5f7f9;
+
+    border-radius: 8px;
+
+    padding: 11px;
+
+}
+
+.dato-label {
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    color: #666;
+
+    margin-bottom: 4px;
+
+}
+
+.dato-valor {
+
+    font-size: 14px;
+
+    font-weight: bold;
+
+}
+
+
+/* =========================================================
+   CAMISETAS
+   ========================================================= */
+
+.tabla-contenedor {
+
+    width: 100%;
+
+    overflow-x: auto;
+
+    margin-bottom: 20px;
+
+}
+
+.tabla {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 550px;
+
+}
+
+.tabla th {
+
+    background: #111;
+
+    color: white;
+
+    padding: 10px;
+
+    text-align: left;
+
+    font-size: 12px;
+
+}
+
+.tabla td {
+
+    padding: 10px;
+
+    border-bottom: 1px solid #ddd;
+
+    font-size: 13px;
+
+}
+
+.tabla tr:nth-child(even) {
+
+    background: #f7f8f9;
+
+}
+
+.genero-f {
+
+    background: #ffd9e6 !important;
+
+    font-weight: bold;
+
+    text-align: center;
+
+}
+
+.genero-m {
+
+    background: #d8efff !important;
+
+    font-weight: bold;
+
+    text-align: center;
+
+}
+
+
+/* =========================================================
+   TOTAL
+   ========================================================= */
+
+.total {
+
+    background: #edf1f5;
+
+    padding: 12px;
+
+    border-radius: 8px;
+
+    display: flex;
+
+    justify-content: space-between;
+
+    font-size: 14px;
+
+    margin-bottom: 18px;
+
+}
+
+
+/* =========================================================
+   OBSERVACIONES
+   ========================================================= */
+
+.observaciones {
+
+    background: #f8f9fa;
+
+    border: 1px solid #ddd;
+
+    border-radius: 8px;
+
+    padding: 13px;
+
+    font-size: 13px;
+
+    white-space: pre-wrap;
+
+}
+
+
+/* =========================================================
+   SIN PEDIDOS
+   ========================================================= */
+
+.sin-pedidos {
+
+    background: white;
+
+    padding: 35px;
+
+    border-radius: 12px;
+
+    text-align: center;
+
+    color: #777;
+
+    box-shadow: 0 2px 8px rgba(0,0,0,.08);
+
+}
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+.login {
+
+    max-width: 420px;
+
+    margin: 80px auto;
+
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 14px;
+
+    box-shadow: 0 3px 15px rgba(0,0,0,.12);
+
+}
+
+.login h2 {
+
+    text-align: center;
+
+    margin-bottom: 8px;
+
+}
+
+.login p {
+
+    text-align: center;
+
+    color: #777;
+
+    font-size: 13px;
+
+    margin-bottom: 20px;
+
+}
+
+.login label {
+
+    display: block;
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    margin-bottom: 5px;
+
+}
+
+.login input {
+
+    width: 100%;
+
+    padding: 11px;
+
+    border: 1px solid #ccc;
+
+    border-radius: 7px;
+
+    margin-bottom: 12px;
+
+}
+
+.login button {
+
+    width: 100%;
+
+    padding: 11px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: #111;
+
+    color: white;
+
+    font-weight: bold;
+
+    cursor: pointer;
+
+}
+
+.login button:hover {
+
+    background: #222;
+
+}
+
+
+/* =========================================================
+   RESPONSIVE
+   ========================================================= */
+
+@media(max-width:700px) {
+
+    body {
+
+        padding: 10px;
+
+    }
+
+    .control {
+
+        flex-direction: column;
+
+        align-items: stretch;
+
+    }
+
+    .botones {
+
+        width: 100%;
+
+    }
+
+    .boton {
+
+        flex: 1;
+
+    }
+
+    .datos {
+
+        grid-template-columns: 1fr;
+
+    }
+
+    .pedido-cabecera {
+
+        padding: 13px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     LOGIN
+     ========================================================= -->
+
+<div
+    id="login"
+    class="login">
+
+    <h2>🔐 CASTSPORT</h2>
+
+    <p>
+        Panel privado de administración
+    </p>
+
+
+    <label>
+        Correo
+    </label>
+
+    <input
+        type="email"
+        id="email"
+        placeholder="Tu correo">
+
+
+    <label>
+        Contraseña
+    </label>
+
+    <input
+        type="password"
+        id="password"
+        placeholder="Tu contraseña">
+
+
+    <button
+        onclick="iniciarSesion()">
+
+        Entrar al panel
+
+    </button>
+
+
+    <div
+        id="loginEstado"
+        class="estado">
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     PANEL ADMIN
+     ========================================================= -->
+
+<div
+    id="panel"
+    class="contenedor"
+    style="display:none;">
+
+
+    <!-- ENCABEZADO -->
+
+    <div class="encabezado">
+
+        <h1>CASTSPORT</h1>
+
+        <p>
+            Panel privado de pedidos
+        </p>
+
+    </div>
+
+
+    <!-- CONTROL -->
+
+    <div class="control">
+
+        <div class="control-info">
+
+            📦 Pedidos recibidos:
+            <span id="cantidadPedidos">
+                0
+            </span>
+
+        </div>
+
+
+        <div class="botones">
+
+            <button
+                class="boton boton-actualizar"
+                onclick="cargarPedidos()">
+
+                🔄 Actualizar
+
+            </button>
+
+
+            <button
+                class="boton boton-salir"
+                onclick="cerrarSesion()">
+
+                Salir
+
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ESTADO -->
+
+    <div
+        id="estado"
+        class="estado">
+    </div>
+
+
+    <!-- PEDIDOS -->
+
+    <div
+        id="listaPedidos"
+        class="lista-pedidos">
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+/* =========================================================
+   SUPABASE
+   ========================================================= */
+
+const SUPABASE_URL =
+    "https://gsacpnubhwpmlxtfcgtc.supabase.co";
+
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_msIUw1EzeJGOIpUSV4EkOA_n2Aimnsw";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+/* =========================================================
+   ESTADO
+   ========================================================= */
+
+function mostrarEstado(
+    mensaje,
+    tipo
+) {
+
+    const estado =
+        document.getElementById("estado");
+
+    estado.textContent =
+        mensaje;
+
+    estado.className =
+        "estado " + tipo;
+
+}
+
+
+function limpiarEstado() {
+
+    const estado =
+        document.getElementById("estado");
+
+    estado.textContent = "";
+
+    estado.className =
+        "estado";
+
+}
+
+
+/* =========================================================
+   LOGIN
+   ========================================================= */
+
+async function iniciarSesion() {
+
+    const email =
+        document
+            .getElementById("email")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("password")
+            .value;
+
+
+    const estado =
+        document
+            .getElementById("loginEstado");
+
+
+    if (!email || !password) {
+
+        estado.textContent =
+            "Escribe correo y contraseña.";
+
+        estado.className =
+            "estado error";
+
+        return;
+
+    }
+
+
+    estado.textContent =
+        "Iniciando sesión...";
+
+    estado.className =
+        "estado cargando";
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient.auth.signInWithPassword({
+
+            email: email,
+
+            password: password
+
+        });
+
+
+    if (error) {
+
+        console.error(error);
+
+        estado.textContent =
+            "❌ Correo o contraseña incorrectos.";
+
+        estado.className =
+            "estado error";
+
+        return;
+
+    }
+
+
+    console.log(
+        "Sesión iniciada:",
+        data.user
+    );
+
+
+    mostrarPanel();
+
+}
+
+
+/* =========================================================
+   MOSTRAR PANEL
+   ========================================================= */
+
+function mostrarPanel() {
+
+    document
+        .getElementById("login")
+        .style.display = "none";
+
+
+    document
+        .getElementById("panel")
+        .style.display = "block";
+
+
+    cargarPedidos();
+
+}
+
+
+/* =========================================================
+   CERRAR SESIÓN
+   ========================================================= */
+
+async function cerrarSesion() {
+
+    await supabaseClient.auth.signOut();
+
+
+    document
+        .getElementById("panel")
+        .style.display = "none";
+
+
+    document
+        .getElementById("login")
+        .style.display = "block";
+
+
+    document
+        .getElementById("email")
+        .value = "";
+
+
+    document
+        .getElementById("password")
+        .value = "";
+
+}
+
+
+/* =========================================================
+   COMPROBAR SESIÓN AL ABRIR
+   ========================================================= */
+
+async function comprobarSesion() {
+
+    const {
+        data
+    } =
+        await supabaseClient.auth.getSession();
+
+
+    if (
+        data &&
+        data.session
+    ) {
+
+        mostrarPanel();
+
+    }
+
+}
+
+
+/* =========================================================
+   CARGAR PEDIDOS
+   ========================================================= */
+
+async function cargarPedidos() {
+
+    mostrarEstado(
+        "⏳ Cargando pedidos...",
+        "cargando"
+    );
+
+
+    const lista =
+        document.getElementById(
+            "listaPedidos"
+        );
+
+
+    lista.innerHTML = "";
+
+
+    /* =====================================================
+       PEDIDOS
+       ===================================================== */
+
+    const {
+        data: pedidos,
+        error: errorPedidos
+    } =
+        await supabaseClient
+            .from("pedidos")
+            .select("*")
+            .order(
+                "id",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (errorPedidos) {
+
+        console.error(
+            errorPedidos
+        );
+
+        mostrarEstado(
+            "❌ Error cargando pedidos: " +
+            errorPedidos.message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !pedidos ||
+        pedidos.length === 0
+    ) {
+
+        document
+            .getElementById(
+                "cantidadPedidos"
+            )
+            .textContent = "0";
+
+
+        lista.innerHTML = `
+
+            <div class="sin-pedidos">
+
+                📭
+
+                <br><br>
+
+                No hay pedidos todavía.
+
+            </div>
+
+        `;
+
+
+        limpiarEstado();
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       CAMISETAS
+       ===================================================== */
+
+    const {
+        data: camisetas,
+        error: errorCamisetas
+    } =
+        await supabaseClient
+            .from("camisetas")
+            .select("*")
+            .order(
+                "id",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (errorCamisetas) {
+
+        console.error(
+            errorCamisetas
+        );
+
+        mostrarEstado(
+            "❌ Error cargando camisetas: " +
+            errorCamisetas.message,
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    document
+        .getElementById(
+            "cantidadPedidos"
+        )
+        .textContent =
+            pedidos.length;
+
+
+    /* =====================================================
+       CREAR PEDIDOS
+       ===================================================== */
+
+    pedidos.forEach(
+        pedido => {
+
+            const camisetasPedido =
+                (camisetas || [])
+                    .filter(
+                        camiseta =>
+                            String(
+                                camiseta.pedido_id
+                            ) ===
+                            String(
+                                pedido.id
+                            )
+                    );
+
+
+            crearPedidoHTML(
+                pedido,
+                camisetasPedido,
+                lista
+            );
+
+        }
+    );
+
+
+    limpiarEstado();
+
+}
+
+
+/* =========================================================
+   CREAR HTML DEL PEDIDO
+   ========================================================= */
+
+function crearPedidoHTML(
+    pedido,
+    camisetas,
+    contenedor
+) {
+
+
+    const pedidoDiv =
+        document.createElement(
+            "div"
+        );
+
+
+    pedidoDiv.className =
+        "pedido";
+
+
+    /* =====================================================
+       FECHA
+       ===================================================== */
+
+    let fechaTexto =
+        "Sin fecha";
+
+
+    if (
+        pedido.fecha_pedido
+    ) {
+
+        const fecha =
+            new Date(
+                pedido.fecha_pedido
+            );
+
+
+        if (
+            !isNaN(
+                fecha.getTime()
+            )
+        ) {
+
+            fechaTexto =
+                fecha.toLocaleString(
+                    "es-PE",
+                    {
+                        dateStyle:
+                            "short",
+                        timeStyle:
+                            "short"
+                    }
+                );
+
+        }
+
+    }
+
+
+    /* =====================================================
+       CABECERA
+       ===================================================== */
+
+    const cabecera =
+        document.createElement(
+            "div"
+        );
+
+
+    cabecera.className =
+        "pedido-cabecera";
+
+
+    cabecera.innerHTML = `
+
+        <div>
+
+            <div class="pedido-titulo">
+
+                🧾 PEDIDO #${pedido.id}
+
+            </div>
+
+            <div class="pedido-subtitulo">
+
+                ${
+                    escaparHTML(
+                        pedido.nombre_equipo ||
+                        pedido.equipo ||
+                        "Sin nombre"
+                    )
+                }
+
+                ·
+
+                ${camisetas.length}
+
+                camiseta(s)
+
+            </div>
+
+        </div>
+
+
+        <div class="flecha">
+
+            ▼
+
+        </div>
+
+    `;
+
+
+    /* =====================================================
+       CONTENIDO
+       ===================================================== */
+
+    const contenido =
+        document.createElement(
+            "div"
+        );
+
+
+    contenido.className =
+        "pedido-contenido";
+
+
+    contenido.innerHTML = `
+
+        <!-- DATOS DEL EQUIPO -->
+
+        <div class="seccion-titulo">
+
+            📋 Datos del equipo
+
+        </div>
+
+
+        <div class="datos">
+
+
+            <div class="dato">
+
+                <div class="dato-label">
+                    Nombre del equipo
+                </div>
+
+                <div class="dato-valor">
+
+                    ${escaparHTML(
+                        pedido.nombre_equipo ||
+                        pedido.equipo ||
+                        "-"
+                    )}
+
+                </div>
+
+            </div>
+
+
+            <div class="dato">
+
+                <div class="dato-label">
+                    Encargado
+                </div>
+
+                <div class="dato-valor">
+
+                    ${escaparHTML(
+                        pedido.encargado ||
+                        "-"
+                    )}
+
+                </div>
+
+            </div>
+
+
+            <div class="dato">
+
+                <div class="dato-label">
+                    Teléfono / WhatsApp
+                </div>
+
+                <div class="dato-valor">
+
+                    ${escaparHTML(
+                        pedido.telefono ||
+                        "-"
+                    )}
+
+                </div>
+
+            </div>
+
+
+            <div class="dato">
+
+                <div class="dato-label">
+                    Tipo de uniforme
+                </div>
+
+                <div class="dato-valor">
+
+                    ${escaparHTML(
+                        pedido.tipo_uniforme ||
+                        "-"
+                    )}
+
+                </div>
+
+            </div>
+
+
+            <div class="dato">
+
+                <div class="dato-label">
+                    Fecha del pedido
+                </div>
+
+                <div class="dato-valor">
+
+                    ${escaparHTML(
+                        fechaTexto
+                    )}
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+
+        <!-- CAMISETAS -->
+
+        <div class="seccion-titulo">
+
+            👕 Camisetas del pedido
+
+        </div>
+
+
+        <div class="tabla-contenedor">
+
+            <table class="tabla">
+
+                <thead>
+
+                    <tr>
+
+                        <th>
+                            #
+                        </th>
+
+                        <th>
+                            Nº
+                        </th>
+
+                        <th>
+                            Nombre
+                        </th>
+
+                        <th>
+                            Talla
+                        </th>
+
+                        <th>
+                            Género
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+
+                <tbody>
+
+                    ${crearFilasCamisetas(
+                        camisetas
+                    )}
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+
+        <!-- TOTAL -->
+
+        <div class="total">
+
+            <span>
+                Total de camisetas
+            </span>
+
+            <strong>
+                ${camisetas.length}
+            </strong>
+
+        </div>
+
+
+        <!-- OBSERVACIONES -->
+
+        <div class="seccion-titulo">
+
+            📝 Observaciones
+
+        </div>
+
+
+        <div class="observaciones">
+
+            ${escaparHTML(
+                pedido.observaciones ||
+                "Sin observaciones"
+            )}
+
+        </div>
+
+    `;
+
+
+    /* =====================================================
+       ABRIR / CERRAR
+       ===================================================== */
+
+    cabecera.addEventListener(
+        "click",
+        () => {
+
+            pedidoDiv.classList.toggle(
+                "abierto"
+            );
+
+        }
+    );
+
+
+    pedidoDiv.appendChild(
+        cabecera
+    );
+
+
+    pedidoDiv.appendChild(
+        contenido
+    );
+
+
+    contenedor.appendChild(
+        pedidoDiv
+    );
+
+}
+
+
+/* =========================================================
+   FILAS DE CAMISETAS
+   ========================================================= */
+
+function crearFilasCamisetas(
+    camisetas
+) {
+
+    if (
+        !camisetas ||
+        camisetas.length === 0
+    ) {
+
+        return `
+
+            <tr>
+
+                <td
+                    colspan="5"
+                    style="text-align:center;">
+
+                    No hay camisetas registradas.
+
+                </td>
+
+            </tr>
+
+        `;
+
+    }
+
+
+    return camisetas.map(
+        (
+            camiseta,
+            index
+        ) => {
+
+
+            let claseGenero = "";
+
+
+            if (
+                camiseta.genero === "F"
+            ) {
+
+                claseGenero =
+                    "genero-f";
+
+            }
+
+
+            if (
+                camiseta.genero === "M"
+            ) {
+
+                claseGenero =
+                    "genero-m";
+
+            }
+
+
+            return `
+
+                <tr>
+
+                    <td>
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        ${escaparHTML(
+                            camiseta.numero ||
+                            "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escaparHTML(
+                            camiseta.nombre ||
+                            "-"
+                        )}
+                    </td>
+
+                    <td>
+                        ${escaparHTML(
+                            camiseta.talla ||
+                            "-"
+                        )}
+                    </td>
+
+                    <td class="${claseGenero}">
+
+                        ${escaparHTML(
+                            camiseta.genero ||
+                            "-"
+                        )}
+
+                    </td>
+
+                </tr>
+
+            `;
+
+        }
+    ).join("");
+
+}
+
+
+/* =========================================================
+   SEGURIDAD HTML
+   ========================================================= */
+
+function escaparHTML(
+    texto
+) {
+
+    if (
+        texto === null ||
+        texto === undefined
+    ) {
+
+        return "";
+
+    }
+
+
+    return String(texto)
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+/* =========================================================
+   INICIAR
+   ========================================================= */
+
+comprobarSesion();
+
+</script>
+
+</body>
+
+</html>
