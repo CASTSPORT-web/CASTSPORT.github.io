@@ -1,1284 +1,945 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <title>CASTSPORT - Sistema de pedidos</title>
+<title>CASTSPORT - Pedidos de Uniformes</title>
 
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<!-- Supabase -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<style>
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-    body {
-      margin: 0;
-      padding: 10px;
-      background: #f1f4f6;
-      font-family: Arial, Helvetica, sans-serif;
-      color: #111;
-    }
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    color: #222;
+    padding: 14px;
+}
 
-    .container {
-      width: 100%;
-      max-width: 900px;
-      margin: 0 auto;
-    }
+.contenedor {
+    max-width: 1000px;
+    margin: auto;
+}
 
-    /* =========================
-       ENCABEZADO
-    ========================= */
+.encabezado {
+    background: #111;
+    color: white;
+    padding: 22px;
+    border-radius: 12px;
+    text-align: center;
+    margin-bottom: 14px;
+}
 
-    header {
-      background: #111;
-      color: white;
-      border-radius: 12px;
-      text-align: center;
-      padding: 18px 15px;
-      margin-bottom: 12px;
-    }
+.encabezado h1 {
+    font-size: 28px;
+    margin-bottom: 5px;
+}
 
-    header h1 {
-      margin: 0;
-      font-size: 26px;
-      font-weight: bold;
-    }
+.encabezado p {
+    font-size: 13px;
+}
 
-    header p {
-      margin: 4px 0 0;
-      font-size: 12px;
-      font-weight: bold;
-    }
+.tarjeta {
+    background: white;
+    padding: 16px;
+    border-radius: 12px;
+    margin-bottom: 14px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
 
-    /* =========================
-       TARJETAS
-    ========================= */
+.titulo {
+    font-size: 19px;
+    font-weight: bold;
+    margin-bottom: 14px;
+}
 
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 15px;
-      margin-bottom: 12px;
-      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-    }
+.formulario {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
 
-    .card h2 {
-      margin: 0 0 14px;
-      font-size: 17px;
-    }
+.campo label {
+    display: block;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
 
-    /* =========================
-       DATOS DEL EQUIPO
-    ========================= */
+input,
+select,
+textarea {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 13px;
+    background: white;
+}
 
-    .datos-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px 10px;
-    }
+textarea {
+    min-height: 100px;
+    resize: vertical;
+}
 
-    .campo label {
-      display: block;
-      font-size: 11px;
-      font-weight: bold;
-      margin-bottom: 5px;
-    }
+.lista {
+    width: 100%;
+}
 
-    input,
-    select,
-    textarea {
-      width: 100%;
-      border: 1px solid #c8c8c8;
-      border-radius: 7px;
-      padding: 8px 10px;
-      font-size: 13px;
-      background: white;
-      color: #111;
-      outline: none;
-    }
+.fila {
+    display: grid;
+    grid-template-columns: 70px 1fr 115px 100px 40px;
+    gap: 7px;
+    margin-bottom: 7px;
+    align-items: center;
+}
 
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: #198754;
-      box-shadow: 0 0 0 2px rgba(25, 135, 84, 0.1);
-    }
+.fila input,
+.fila select {
+    height: 35px;
+}
 
-    textarea {
-      min-height: 90px;
-      resize: vertical;
-    }
+.genero {
+    font-weight: bold;
+    text-align: center;
+    transition: background 0.2s;
+}
 
-    /* =========================
-       LISTA DE CAMISETAS
-    ========================= */
+.genero-f {
+    background: #ffd9e6 !important;
+}
 
-    .camiseta-row {
-      display: grid;
-      grid-template-columns: 63px minmax(120px, 1fr) 100px 90px 36px;
-      gap: 7px;
-      margin-bottom: 7px;
-      align-items: center;
-    }
+.genero-m {
+    background: #d8efff !important;
+}
 
-    .camiseta-row input,
-    .camiseta-row select {
-      height: 31px;
-      padding: 5px 9px;
-    }
+.boton-agregar {
+    width: 100%;
+    border: none;
+    background: #111;
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 5px;
+}
 
-    .btn-eliminar {
-      height: 31px;
-      border: none;
-      border-radius: 7px;
-      background: #dc3545;
-      color: white;
-      font-size: 13px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.boton-agregar:hover {
+    background: #222;
+}
 
-    .btn-eliminar:hover {
-      background: #c82333;
-    }
+.boton-eliminar {
+    border: none;
+    background: #dc3545;
+    color: white;
+    height: 35px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+}
 
-    .btn-agregar {
-      width: 100%;
-      height: 30px;
-      border: none;
-      border-radius: 6px;
-      background: #111;
-      color: white;
-      font-weight: bold;
-      font-size: 12px;
-      cursor: pointer;
-      margin-top: 2px;
-    }
+.boton-eliminar:hover {
+    background: #bb2d3b;
+}
 
-    .btn-agregar:hover {
-      background: #222;
-    }
+.total {
+    margin-top: 14px;
+    background: #edf1f5;
+    padding: 11px;
+    border-radius: 7px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 13px;
+}
 
-    .total {
-      margin-top: 12px;
-      padding: 11px;
-      border-radius: 7px;
-      background: #edf2f5;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 11px;
-    }
+.boton-generar,
+.boton-descargar {
+    width: 100%;
+    border: none;
+    color: white;
+    padding: 11px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-top: 10px;
+}
 
-    .total strong {
-      font-size: 14px;
-    }
+.boton-generar {
+    background: #198754;
+}
 
-    /* =========================
-       OBSERVACIONES
-    ========================= */
+.boton-generar:hover {
+    background: #157347;
+}
 
-    .acciones {
-      margin-top: 11px;
-      display: flex;
-      flex-direction: column;
-      gap: 7px;
-    }
+.boton-generar:disabled {
+    background: #777;
+    cursor: wait;
+}
 
-    .btn-generar,
-    .btn-descargar {
-      width: 100%;
-      height: 36px;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      font-size: 12px;
-      font-weight: bold;
-      cursor: pointer;
-    }
+.boton-descargar {
+    background: #2864e6;
+}
 
-    .btn-generar {
-      background: #198754;
-    }
+.boton-descargar:hover {
+    background: #1d4fc0;
+}
 
-    .btn-generar:hover {
-      background: #157347;
-    }
+.estado {
+    display: none;
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+}
 
-    .btn-generar:disabled {
-      background: #7cae96;
-      cursor: wait;
-    }
+.estado.exito {
+    display: block;
+    background: #d1e7dd;
+    color: #0f5132;
+}
 
-    .btn-descargar {
-      background: #2864dc;
-    }
+.estado.error {
+    display: block;
+    background: #f8d7da;
+    color: #842029;
+}
 
-    .btn-descargar:hover {
-      background: #1e53c2;
-    }
+.pie {
+    background: #111;
+    color: white;
+    padding: 16px;
+    border-radius: 12px;
+    text-align: center;
+    margin-top: 10px;
+}
 
-    /* =========================
-       MENSAJES
-    ========================= */
+.pie h2 {
+    font-size: 21px;
+    margin-bottom: 4px;
+}
 
-    #mensaje {
-      display: none;
-      padding: 10px;
-      margin-bottom: 12px;
-      border-radius: 7px;
-      font-size: 13px;
-      font-weight: bold;
-      text-align: center;
-    }
+.pie p {
+    font-size: 11px;
+}
 
-    #mensaje.exito {
-      display: block;
-      background: #d1e7dd;
-      color: #0f5132;
-      border: 1px solid #badbcc;
-    }
+/* En pantallas pequeñas */
+@media (max-width: 700px) {
 
-    #mensaje.error {
-      display: block;
-      background: #f8d7da;
-      color: #842029;
-      border: 1px solid #f5c2c7;
-    }
-
-    /* =========================
-       PIE
-    ========================= */
-
-    footer {
-      background: #111;
-      color: white;
-      border-radius: 12px;
-      text-align: center;
-      padding: 14px;
-      margin-top: 12px;
-      margin-bottom: 10px;
-    }
-
-    footer strong {
-      display: block;
-      font-size: 20px;
-    }
-
-    footer span {
-      font-size: 10px;
-    }
-
-    /* =========================
-       RESPONSIVE
-    ========================= */
-
-    @media (max-width: 700px) {
-      body {
-        padding: 7px;
-      }
-
-      .datos-grid {
+    .formulario {
         grid-template-columns: 1fr;
-        gap: 9px;
-      }
+    }
 
-      .camiseta-row {
-        grid-template-columns: 55px minmax(100px, 1fr) 85px 75px 34px;
+    .fila {
+        grid-template-columns: 55px 1fr 90px 75px 35px;
         gap: 5px;
-      }
+    }
 
-      .camiseta-row input,
-      .camiseta-row select {
+    .fila input,
+    .fila select,
+    .boton-eliminar {
         font-size: 11px;
-      }
-
-      header h1 {
-        font-size: 23px;
-      }
     }
-
-    @media (max-width: 480px) {
-      .camiseta-row {
-        grid-template-columns: 50px 1fr 75px 70px 32px;
-      }
-
-      .camiseta-row input,
-      .camiseta-row select {
-        padding: 4px;
-        font-size: 10px;
-      }
-    }
-  </style>
+}
+</style>
 </head>
 
 <body>
 
-  <div class="container">
+<div class="contenedor">
 
-    <!-- =========================
-         HEADER
-    ========================== -->
+    <!-- ENCABEZADO -->
+    <div class="encabezado">
+        <h1>CASTSPORT</h1>
+        <p>Sistema de pedidos y personalización de uniformes</p>
+    </div>
 
-    <header>
-      <h1>CASTSPORT</h1>
-      <p>Sistema de pedidos y personalización de uniformes</p>
-    </header>
+    <!-- DATOS DEL EQUIPO -->
+    <div class="tarjeta">
 
-    <!-- Mensaje de estado -->
-    <div id="mensaje"></div>
-
-    <!-- =========================
-         DATOS DEL EQUIPO
-    ========================== -->
-
-    <section class="card">
-
-      <h2>📋 Datos del equipo</h2>
-
-      <div class="datos-grid">
-
-        <div class="campo">
-          <label for="nombreEquipo">Nombre del equipo</label>
-          <input
-            type="text"
-            id="nombreEquipo"
-            placeholder="Nombre del equipo"
-          />
+        <div class="titulo">
+            📋 Datos del equipo
         </div>
 
-        <div class="campo">
-          <label for="encargado">Nombre del encargado</label>
-          <input
-            type="text"
-            id="encargado"
-            placeholder="Nombre del encargado"
-          />
+        <div class="formulario">
+
+            <div class="campo">
+                <label>Nombre del equipo</label>
+                <input
+                    type="text"
+                    id="equipo"
+                    placeholder="Nombre del equipo">
+            </div>
+
+            <div class="campo">
+                <label>Nombre del encargado</label>
+                <input
+                    type="text"
+                    id="encargado"
+                    placeholder="Nombre del encargado">
+            </div>
+
+            <div class="campo">
+                <label>Teléfono / WhatsApp</label>
+                <input
+                    type="text"
+                    id="telefono"
+                    placeholder="Número de teléfono">
+            </div>
+
+            <div class="campo">
+                <label>Tipo de uniforme</label>
+                <select id="tipoUniforme">
+                    <option>Camiseta</option>
+                    <option>Conjunto</option>
+                    <option>Uniforme completo</option>
+                </select>
+            </div>
+
+        </div>
+    </div>
+
+
+    <!-- LISTA DE CAMISETAS -->
+    <div class="tarjeta">
+
+        <div class="titulo">
+            👕 Lista de camisetas
         </div>
 
-        <div class="campo">
-          <label for="telefono">Teléfono / WhatsApp</label>
-          <input
-            type="tel"
-            id="telefono"
-            placeholder="Número de teléfono"
-          />
-        </div>
-
-        <div class="campo">
-          <label for="tipoUniforme">Tipo de uniforme</label>
-
-          <select id="tipoUniforme">
-            <option value="Camiseta">Camiseta</option>
-            <option value="Conjunto">Conjunto</option>
-          </select>
-        </div>
-
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         LISTA DE CAMISETAS
-    ========================== -->
-
-    <section class="card">
-
-      <h2>👕 Lista de camisetas</h2>
-
-      <div id="listaCamisetas"></div>
-
-      <button
-        type="button"
-        class="btn-agregar"
-        onclick="agregarCamiseta()"
-      >
-        + Agregar camiseta
-      </button>
-
-      <div class="total">
-        <span>Total de camisetas</span>
-        <strong id="totalCamisetas">0</strong>
-      </div>
-
-    </section>
-
-
-    <!-- =========================
-         OBSERVACIONES
-    ========================== -->
-
-    <section class="card">
-
-      <h2>📝 Observaciones</h2>
-
-      <textarea
-        id="observaciones"
-        placeholder="Escribe aquí alguna observación del pedido..."
-      ></textarea>
-
-      <div class="acciones">
+        <div id="listaCamisetas" class="lista"></div>
 
         <button
-          type="button"
-          id="btnGenerar"
-          class="btn-generar"
-          onclick="guardarPedido()"
-        >
-          ☑ Generar pedido
+            type="button"
+            class="boton-agregar"
+            onclick="agregarCamiseta()">
+            + Agregar camiseta
+        </button>
+
+        <div class="total">
+            <span>Total de camisetas</span>
+            <strong id="total">0</strong>
+        </div>
+
+    </div>
+
+
+    <!-- OBSERVACIONES -->
+    <div class="tarjeta">
+
+        <div class="titulo">
+            📝 Observaciones
+        </div>
+
+        <textarea
+            id="observaciones"
+            placeholder="Escribe aquí alguna observación del pedido..."></textarea>
+
+        <button
+            type="button"
+            id="botonGenerar"
+            class="boton-generar"
+            onclick="generarPedido()">
+            ☑ Generar pedido
         </button>
 
         <button
-          type="button"
-          class="btn-descargar"
-          onclick="descargarPedido()"
-        >
-          📥 Descargar pedido
+            type="button"
+            class="boton-descargar"
+            onclick="descargarPedido()">
+            📥 Descargar pedido
         </button>
 
-      </div>
+        <div id="estado" class="estado"></div>
 
-    </section>
-
-
-    <!-- =========================
-         FOOTER
-    ========================== -->
-
-    <footer>
-      <strong>CASTSPORT</strong>
-      <span>Sistema de pedidos y personalización de uniformes</span>
-    </footer>
-
-  </div>
+    </div>
 
 
-  <script>
+    <!-- PIE -->
+    <div class="pie">
+        <h2>CASTSPORT</h2>
+        <p>Sistema de pedidos y personalización de uniformes</p>
+    </div>
 
-    /* =====================================================
-       CONFIGURACIÓN SUPABASE
-    ===================================================== */
-
-    const SUPABASE_URL =
-      "https://gsacpnubhwpmlxtfcgtc.supabase.co";
-
-    const SUPABASE_KEY =
-      "sb_publishable_msIUw1EzeJGOIpUSV4EkOA_n2Aimnsw";
-
-    const supabaseClient =
-      window.supabase.createClient(
-        SUPABASE_URL,
-        SUPABASE_KEY
-      );
+</div>
 
 
-    /* =====================================================
-       VARIABLES
-    ===================================================== */
+<script>
+/* =========================================================
+   SUPABASE
+   ========================================================= */
 
-    let numeroCamiseta = 0;
+const SUPABASE_URL = "https://gsacpnubhwpmlxtfcgtc.supabase.co";
 
-    let ultimoPedido = null;
+const SUPABASE_PUBLISHABLE_KEY =
+    "sb_publishable_msIUw1EzeJGOIpUSV4EkOA_n2Aimnsw";
 
-
-    /* =====================================================
-       TALLAS
-    ===================================================== */
-
-    const tallas = [
-      "Talla",
-      "XS",
-      "S",
-      "M",
-      "L",
-      "XL",
-      "XXL"
-    ];
+const supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_PUBLISHABLE_KEY
+);
 
 
-    /* =====================================================
-       GENEROS
-    ===================================================== */
+/* =========================================================
+   CONFIGURACIÓN DE TALLAS
+   ========================================================= */
 
-    const generos = [
-      "Género",
-      "M",
-      "F"
-    ];
+const tallas = [
+    "4",
+    "6",
+    "8",
+    "10",
+    "12",
+    "14",
+    "16",
+    "XS",
+    "S",
+    "M",
+    "L",
+    "XL",
+    "XXL"
+];
+
+let contador = 0;
 
 
-    /* =====================================================
-       CREAR SELECT DE TALLA
-    ===================================================== */
+/* =========================================================
+   UTILIDADES
+   ========================================================= */
 
-    function crearSelectTalla() {
+function mostrarEstado(mensaje, tipo) {
+    const estado = document.getElementById("estado");
 
-      const select = document.createElement("select");
+    estado.textContent = mensaje;
+    estado.className = "estado " + tipo;
+}
 
-      select.className = "talla";
+function limpiarEstado() {
+    const estado = document.getElementById("estado");
 
-      tallas.forEach(function(talla) {
+    estado.textContent = "";
+    estado.className = "estado";
+}
 
-        const option = document.createElement("option");
 
-        option.value = talla === "Talla" ? "" : talla;
+/* =========================================================
+   AGREGAR CAMISETA
+   ========================================================= */
 
-        option.textContent = talla;
+function agregarCamiseta(
+    numero = "",
+    nombre = "",
+    talla = "",
+    genero = ""
+) {
 
-        select.appendChild(option);
+    contador++;
 
-      });
+    const lista = document.getElementById("listaCamisetas");
 
-      return select;
+    const fila = document.createElement("div");
+
+    fila.className = "fila";
+
+    fila.innerHTML = `
+
+        <input
+            type="text"
+            class="numero"
+            placeholder="Nº"
+            value="${numero}">
+
+        <input
+            type="text"
+            class="nombre"
+            placeholder="Nombre"
+            value="${nombre}">
+
+        <select class="talla">
+            <option value="">Talla</option>
+
+            ${tallas.map(t =>
+                `<option value="${t}" ${t === talla ? "selected" : ""}>
+                    ${t}
+                </option>`
+            ).join("")}
+
+        </select>
+
+        <select
+            class="genero ${genero === "F" ? "genero-f" : genero === "M" ? "genero-m" : ""}"
+            onchange="cambiarGenero(this)">
+
+            <option value="">Género</option>
+
+            <option value="F" ${genero === "F" ? "selected" : ""}>
+                F
+            </option>
+
+            <option value="M" ${genero === "M" ? "selected" : ""}>
+                M
+            </option>
+
+        </select>
+
+        <button
+            type="button"
+            class="boton-eliminar"
+            onclick="eliminarCamiseta(this)">
+            ×
+        </button>
+    `;
+
+    lista.appendChild(fila);
+
+    actualizarTotal();
+}
+
+
+/* =========================================================
+   CAMBIAR COLOR SEGÚN GÉNERO
+   ========================================================= */
+
+function cambiarGenero(select) {
+
+    select.classList.remove("genero-f");
+    select.classList.remove("genero-m");
+
+    if (select.value === "F") {
+        select.classList.add("genero-f");
     }
 
-
-    /* =====================================================
-       CREAR SELECT DE GENERO
-    ===================================================== */
-
-    function crearSelectGenero() {
-
-      const select = document.createElement("select");
-
-      select.className = "genero";
-
-      generos.forEach(function(genero) {
-
-        const option = document.createElement("option");
-
-        option.value = genero === "Género" ? "" : genero;
-
-        option.textContent = genero;
-
-        select.appendChild(option);
-
-      });
-
-      return select;
+    if (select.value === "M") {
+        select.classList.add("genero-m");
     }
+}
 
 
-    /* =====================================================
-       AGREGAR CAMISETA
-    ===================================================== */
+/* =========================================================
+   ELIMINAR
+   ========================================================= */
 
-    function agregarCamiseta(
-      numero = "",
-      nombre = "",
-      talla = "",
-      genero = ""
-    ) {
+function eliminarCamiseta(boton) {
 
-      numeroCamiseta++;
+    boton.parentElement.remove();
 
-      const fila = document.createElement("div");
-
-      fila.className = "camiseta-row";
-
-      /* Número */
-
-      const inputNumero = document.createElement("input");
-
-      inputNumero.type = "text";
-
-      inputNumero.className = "numero";
-
-      inputNumero.placeholder = "N°";
-
-      inputNumero.value = numero;
+    actualizarTotal();
+}
 
 
-      /* Nombre */
+/* =========================================================
+   ACTUALIZAR TOTAL
+   ========================================================= */
 
-      const inputNombre = document.createElement("input");
+function actualizarTotal() {
 
-      inputNombre.type = "text";
+    const filas =
+        document.querySelectorAll(".fila");
 
-      inputNombre.className = "nombre";
-
-      inputNombre.placeholder = "Nombre";
-
-      inputNombre.value = nombre;
-
-
-      /* Talla */
-
-      const selectTalla = crearSelectTalla();
-
-      selectTalla.value = talla;
-
-
-      /* Género */
-
-      const selectGenero = crearSelectGenero();
-
-      selectGenero.value = genero;
-
-
-      /* Botón eliminar */
-
-      const botonEliminar = document.createElement("button");
-
-      botonEliminar.type = "button";
-
-      botonEliminar.className = "btn-eliminar";
-
-      botonEliminar.textContent = "×";
-
-      botonEliminar.onclick = function() {
-
-        fila.remove();
-
-        actualizarTotal();
-
-      };
-
-
-      fila.appendChild(inputNumero);
-
-      fila.appendChild(inputNombre);
-
-      fila.appendChild(selectTalla);
-
-      fila.appendChild(selectGenero);
-
-      fila.appendChild(botonEliminar);
-
-      document
-        .getElementById("listaCamisetas")
-        .appendChild(fila);
-
-      actualizarTotal();
-    }
-
-
-    /* =====================================================
-       TOTAL DE CAMISETAS
-    ===================================================== */
-
-    function actualizarTotal() {
-
-      const filas =
-        document.querySelectorAll(".camiseta-row");
-
-      document.getElementById("totalCamisetas").textContent =
+    document.getElementById("total").textContent =
         filas.length;
-    }
+}
 
 
-    /* =====================================================
-       OBTENER CAMISETAS
-    ===================================================== */
+/* =========================================================
+   LEER CAMISETAS DEL FORMULARIO
+   ========================================================= */
 
-    function obtenerCamisetas() {
+function obtenerCamisetas() {
 
-      const filas =
-        document.querySelectorAll(".camiseta-row");
+    const filas =
+        document.querySelectorAll(".fila");
 
-      const camisetas = [];
+    return Array.from(filas).map((fila) => {
 
-      filas.forEach(function(fila) {
+        return {
+            numero:
+                fila.querySelector(".numero").value.trim(),
 
-        const numero =
-          fila.querySelector(".numero").value.trim();
+            nombre:
+                fila.querySelector(".nombre").value.trim(),
 
-        const nombre =
-          fila.querySelector(".nombre").value.trim();
+            talla:
+                fila.querySelector(".talla").value,
 
-        const talla =
-          fila.querySelector(".talla").value;
-
-        const genero =
-          fila.querySelector(".genero").value;
-
-        camisetas.push({
-
-          numero: numero,
-
-          nombre: nombre,
-
-          talla: talla,
-
-          genero: genero
-
-        });
-
-      });
-
-      return camisetas;
-    }
+            genero:
+                fila.querySelector(".genero").value
+        };
+    });
+}
 
 
-    /* =====================================================
-       MOSTRAR MENSAJE
-    ===================================================== */
+/* =========================================================
+   GENERAR PEDIDO + GUARDAR EN SUPABASE
+   ========================================================= */
 
-    function mostrarMensaje(texto, tipo) {
+async function generarPedido() {
 
-      const mensaje =
-        document.getElementById("mensaje");
+    limpiarEstado();
 
-      mensaje.textContent = texto;
+    const boton =
+        document.getElementById("botonGenerar");
 
-      mensaje.className = "";
+    const equipo =
+        document.getElementById("equipo").value.trim();
 
-      mensaje.classList.add(tipo);
+    const encargado =
+        document.getElementById("encargado").value.trim();
 
-      window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-      });
+    const telefono =
+        document.getElementById("telefono").value.trim();
 
-    }
+    const tipo =
+        document.getElementById("tipoUniforme").value;
 
+    const observaciones =
+        document.getElementById("observaciones").value.trim();
 
-    /* =====================================================
-       VALIDAR FORMULARIO
-    ===================================================== */
-
-    function validarFormulario() {
-
-      const nombreEquipo =
-        document
-          .getElementById("nombreEquipo")
-          .value
-          .trim();
-
-      const encargado =
-        document
-          .getElementById("encargado")
-          .value
-          .trim();
-
-      const telefono =
-        document
-          .getElementById("telefono")
-          .value
-          .trim();
-
-      const camisetas =
+    const camisetas =
         obtenerCamisetas();
 
 
-      if (!nombreEquipo) {
+    /* VALIDACIONES */
 
-        mostrarMensaje(
-          "Escribe el nombre del equipo.",
-          "error"
-        );
+    if (!equipo) {
 
-        return false;
-      }
-
-
-      if (!encargado) {
-
-        mostrarMensaje(
-          "Escribe el nombre del encargado.",
-          "error"
-        );
-
-        return false;
-      }
-
-
-      if (!telefono) {
-
-        mostrarMensaje(
-          "Escribe un teléfono o WhatsApp.",
-          "error"
-        );
-
-        return false;
-      }
-
-
-      if (camisetas.length === 0) {
-
-        mostrarMensaje(
-          "Agrega al menos una camiseta.",
-          "error"
-        );
-
-        return false;
-      }
-
-
-      for (
-        let i = 0;
-        i < camisetas.length;
-        i++
-      ) {
-
-        if (!camisetas[i].nombre) {
-
-          mostrarMensaje(
-            `Falta el nombre de la camiseta ${i + 1}.`,
+        mostrarEstado(
+            "Por favor, escribe el nombre del equipo.",
             "error"
-          );
+        );
 
-          return false;
-        }
+        return;
+    }
 
+    if (camisetas.length === 0) {
 
-        if (!camisetas[i].talla) {
-
-          mostrarMensaje(
-            `Selecciona la talla de la camiseta ${i + 1}.`,
+        mostrarEstado(
+            "Agrega al menos una camiseta.",
             "error"
-          );
+        );
 
-          return false;
-        }
-
-
-        if (!camisetas[i].genero) {
-
-          mostrarMensaje(
-            `Selecciona el género de la camiseta ${i + 1}.`,
-            "error"
-          );
-
-          return false;
-        }
-
-      }
-
-
-      return true;
+        return;
     }
 
 
-    /* =====================================================
-       GUARDAR PEDIDO EN SUPABASE
-    ===================================================== */
+    /* EVITAR DOBLE CLIC */
 
-    async function guardarPedido() {
-
-      if (!validarFormulario()) {
-        return;
-      }
+    boton.disabled = true;
+    boton.textContent = "⏳ Guardando pedido...";
 
 
-      const boton =
-        document.getElementById("btnGenerar");
+    try {
 
-      boton.disabled = true;
+        /*
+         * 1. GUARDAR EL PEDIDO PRINCIPAL
+         */
 
-      boton.textContent =
-        "⏳ Guardando pedido...";
-
-
-      try {
-
-        /* ================================================
-           DATOS DEL PEDIDO
-        ================================================= */
-
-        const pedido = {
-
-          nombre_equipo:
-            document
-              .getElementById("nombreEquipo")
-              .value
-              .trim(),
-
-          encargado:
-            document
-              .getElementById("encargado")
-              .value
-              .trim(),
-
-          telefono:
-            document
-              .getElementById("telefono")
-              .value
-              .trim(),
-
-          tipo_uniforme:
-            document
-              .getElementById("tipoUniforme")
-              .value,
-
-          observaciones:
-            document
-              .getElementById("observaciones")
-              .value
-              .trim()
-
-        };
+        const { data: pedido, error: errorPedido } =
+            await supabaseClient
+                .from("pedidos")
+                .insert({
+                    equipo: equipo,
+                    encargado: encargado,
+                    telefono: telefono,
+                    tipo_uniforme: tipo,
+                    observaciones: observaciones || null
+                })
+                .select()
+                .single();
 
 
-        /* ================================================
-           INSERTAR PEDIDO
-        ================================================= */
-
-        const resultadoPedido =
-          await supabaseClient
-            .from("pedidos")
-            .insert(pedido)
-            .select()
-            .single();
-
-
-        if (resultadoPedido.error) {
-
-          console.error(
-            "Error creando pedido:",
-            resultadoPedido.error
-          );
-
-          throw new Error(
-            resultadoPedido.error.message
-          );
+        if (errorPedido) {
+            throw errorPedido;
         }
 
 
-        const pedidoCreado =
-          resultadoPedido.data;
-
-
-        /* ================================================
-           OBTENER CAMISETAS
-        ================================================= */
-
-        const camisetas =
-          obtenerCamisetas();
-
-
-        /* ================================================
-           PREPARAR CAMISETAS PARA SUPABASE
-        ================================================= */
+        /*
+         * 2. PREPARAR LAS CAMISETAS
+         */
 
         const camisetasParaGuardar =
-          camisetas.map(function(camiseta) {
+            camisetas.map((camiseta) => {
 
-            return {
-
-              pedido_id:
-                pedidoCreado.id,
-
-              numero:
-                camiseta.numero === ""
-                  ? null
-                  : camiseta.numero,
-
-              nombre:
-                camiseta.nombre,
-
-              talla:
-                camiseta.talla,
-
-              genero:
-                camiseta.genero
-
-            };
-
-          });
+                return {
+                    pedido_id: pedido.id,
+                    numero: camiseta.numero || null,
+                    nombre: camiseta.nombre || null,
+                    talla: camiseta.talla || null,
+                    genero: camiseta.genero || null
+                };
+            });
 
 
-        /* ================================================
-           INSERTAR CAMISETAS
-        ================================================= */
+        /*
+         * 3. GUARDAR TODAS LAS CAMISETAS
+         */
 
-        const resultadoCamisetas =
-          await supabaseClient
-            .from("camisetas")
-            .insert(camisetasParaGuardar);
-
-
-        if (resultadoCamisetas.error) {
-
-          console.error(
-            "Error guardando camisetas:",
-            resultadoCamisetas.error
-          );
-
-          /*
-             Intentamos borrar el pedido si las camisetas
-             no pudieron guardarse.
-          */
-
-          await supabaseClient
-            .from("pedidos")
-            .delete()
-            .eq("id", pedidoCreado.id);
+        const { error: errorCamisetas } =
+            await supabaseClient
+                .from("camisetas")
+                .insert(camisetasParaGuardar);
 
 
-          throw new Error(
-            resultadoCamisetas.error.message
-          );
+        if (errorCamisetas) {
+            throw errorCamisetas;
         }
 
 
-        /* ================================================
-           GUARDAR PEDIDO EN MEMORIA
-        ================================================= */
+        /*
+         * 4. CONFIRMACIÓN
+         */
 
-        ultimoPedido = {
-
-          ...pedidoCreado,
-
-          camisetas:
-            camisetas
-
-        };
-
-
-        /* ================================================
-           ÉXITO
-        ================================================= */
-
-        mostrarMensaje(
-          "✅ Pedido guardado correctamente en CASTSPORT.",
-          "exito"
+        mostrarEstado(
+            "✅ Pedido guardado correctamente en Supabase.",
+            "exito"
         );
 
 
-        boton.textContent =
-          "✅ Pedido guardado";
+        /*
+         * 5. RESUMEN
+         */
+
+        let resumen = "";
+
+        resumen += "CASTSPORT\n";
+        resumen += "==============================\n\n";
+
+        resumen += "DATOS DEL EQUIPO\n";
+        resumen += "Equipo: " + equipo + "\n";
+        resumen += "Encargado: " + encargado + "\n";
+        resumen += "Teléfono: " + telefono + "\n";
+        resumen += "Tipo de uniforme: " + tipo + "\n\n";
+
+        resumen += "LISTA DE CAMISETAS\n";
+        resumen += "==============================\n";
+
+        camisetas.forEach((camiseta, index) => {
+
+            resumen +=
+                (index + 1) +
+                ". Nº: " +
+                camiseta.numero +
+                " | Nombre: " +
+                camiseta.nombre +
+                " | Talla: " +
+                camiseta.talla +
+                " | Género: " +
+                camiseta.genero +
+                "\n";
+        });
+
+        resumen += "\n";
+        resumen +=
+            "Total de camisetas: " +
+            camisetas.length +
+            "\n\n";
+
+        resumen += "OBSERVACIONES\n";
+        resumen +=
+            observaciones ||
+            "Sin observaciones";
 
 
-      } catch (error) {
-
-        console.error(error);
-
-        mostrarMensaje(
-          "❌ No se pudo guardar el pedido: " +
-          error.message,
-          "error"
+        alert(
+            "PEDIDO GUARDADO\n\n" +
+            "ID del pedido: " +
+            pedido.id +
+            "\n\n" +
+            resumen
         );
 
-        boton.textContent =
-          "☑ Generar pedido";
 
-      }
+    } catch (error) {
 
+        console.error(
+            "Error guardando pedido:",
+            error
+        );
 
-      boton.disabled = false;
+        mostrarEstado(
+            "❌ No se pudo guardar el pedido: " +
+            (error.message || "Error desconocido"),
+            "error"
+        );
 
+        alert(
+            "No se pudo guardar el pedido.\n\n" +
+            (error.message || "Error desconocido")
+        );
+
+    } finally {
+
+        boton.disabled = false;
+        boton.textContent = "☑ Generar pedido";
     }
+}
 
 
-    /* =====================================================
-       DESCARGAR PEDIDO
-    ===================================================== */
+/* =========================================================
+   DESCARGAR PEDIDO EN TXT
+   ========================================================= */
 
-    function descargarPedido() {
+function descargarPedido() {
 
-      const nombreEquipo =
-        document
-          .getElementById("nombreEquipo")
-          .value
-          .trim();
+    const equipo =
+        document.getElementById("equipo").value.trim()
+        || "Sin nombre";
 
-      const encargado =
-        document
-          .getElementById("encargado")
-          .value
-          .trim();
+    const encargado =
+        document.getElementById("encargado").value.trim()
+        || "";
 
-      const telefono =
-        document
-          .getElementById("telefono")
-          .value
-          .trim();
+    const telefono =
+        document.getElementById("telefono").value.trim()
+        || "";
 
-      const tipoUniforme =
-        document
-          .getElementById("tipoUniforme")
-          .value;
+    const tipo =
+        document.getElementById("tipoUniforme").value;
 
-      const observaciones =
-        document
-          .getElementById("observaciones")
-          .value
-          .trim();
+    const observaciones =
+        document.getElementById("observaciones").value.trim()
+        || "Sin observaciones";
 
-      const camisetas =
+    const camisetas =
         obtenerCamisetas();
 
 
-      if (!nombreEquipo) {
+    if (camisetas.length === 0) {
 
-        mostrarMensaje(
-          "Completa primero los datos del equipo.",
-          "error"
+        alert(
+            "Agrega al menos una camiseta antes de descargar."
         );
 
         return;
-      }
+    }
 
 
-      let contenido = "";
+    let contenido = "";
 
-      contenido +=
-        "========================================\n";
+    contenido += "CASTSPORT\n";
+    contenido +=
+        "SISTEMA DE PEDIDOS Y PERSONALIZACIÓN DE UNIFORMES\n";
+    contenido +=
+        "===============================================\n\n";
 
-      contenido +=
-        "              CASTSPORT\n";
+    contenido += "DATOS DEL EQUIPO\n";
+    contenido +=
+        "-----------------------------------------------\n";
 
-      contenido +=
-        "========================================\n\n";
-
-      contenido +=
-        "PEDIDO DE UNIFORMES\n\n";
-
-      contenido +=
-        "Equipo: " +
-        nombreEquipo +
+    contenido +=
+        "Nombre del equipo: " +
+        equipo +
         "\n";
 
-      contenido +=
-        "Encargado: " +
+    contenido +=
+        "Nombre del encargado: " +
         encargado +
         "\n";
 
-      contenido +=
-        "Teléfono: " +
+    contenido +=
+        "Teléfono / WhatsApp: " +
         telefono +
         "\n";
 
-      contenido +=
+    contenido +=
         "Tipo de uniforme: " +
-        tipoUniforme +
+        tipo +
         "\n\n";
 
-
-      contenido +=
-        "----------------------------------------\n";
-
-      contenido +=
-        "CAMISETAS\n";
-
-      contenido +=
-        "----------------------------------------\n\n";
+    contenido += "LISTA DE CAMISETAS\n";
+    contenido +=
+        "-----------------------------------------------\n";
 
 
-      camisetas.forEach(function(camiseta, index) {
+    camisetas.forEach((camiseta, index) => {
 
         contenido +=
-          "Camiseta " +
-          (index + 1) +
-          "\n";
-
-        contenido +=
-          "Número: " +
-          (camiseta.numero || "-") +
-          "\n";
-
-        contenido +=
-          "Nombre: " +
-          camiseta.nombre +
-          "\n";
-
-        contenido +=
-          "Talla: " +
-          camiseta.talla +
-          "\n";
-
-        contenido +=
-          "Género: " +
-          camiseta.genero +
-          "\n\n";
-
-      });
+            (index + 1) +
+            ". Nº: " +
+            camiseta.numero +
+            " | Nombre: " +
+            camiseta.nombre +
+            " | Talla: " +
+            camiseta.talla +
+            " | Género: " +
+            camiseta.genero +
+            "\n";
+    });
 
 
-      contenido +=
-        "----------------------------------------\n";
+    contenido += "\n";
 
-      contenido +=
+    contenido +=
         "Total de camisetas: " +
         camisetas.length +
-        "\n";
-
-      contenido +=
-        "----------------------------------------\n\n";
-
-
-      contenido +=
-        "OBSERVACIONES\n";
-
-      contenido +=
-        (observaciones || "Sin observaciones") +
         "\n\n";
 
+    contenido += "OBSERVACIONES\n";
 
-      contenido +=
-        "========================================\n";
+    contenido +=
+        "-----------------------------------------------\n";
 
-      contenido +=
-        "CASTSPORT\n";
+    contenido +=
+        observaciones +
+        "\n\n";
 
-      contenido +=
-        "Sistema de pedidos y personalización\n";
+    contenido +=
+        "===============================================\n";
 
-      contenido +=
-        "========================================\n";
+    contenido += "CASTSPORT\n";
 
 
-      const archivo =
+    const archivo =
         new Blob(
-          [contenido],
-          {
-            type: "text/plain;charset=utf-8"
-          }
+            [contenido],
+            {
+                type: "text/plain;charset=utf-8"
+            }
         );
 
 
-      const url =
+    const url =
         URL.createObjectURL(archivo);
 
-
-      const enlace =
+    const enlace =
         document.createElement("a");
 
-      enlace.href = url;
+    enlace.href = url;
 
-      enlace.download =
+    enlace.download =
         "pedido-" +
-        (nombreEquipo || "castsport")
-          .replace(/\s+/g, "-")
-          .toLowerCase() +
+        equipo.replace(/[^a-z0-9]/gi, "-") +
         ".txt";
 
+    document.body.appendChild(enlace);
 
-      document.body.appendChild(enlace);
+    enlace.click();
 
-      enlace.click();
+    document.body.removeChild(enlace);
 
-      document.body.removeChild(enlace);
-
-      URL.revokeObjectURL(url);
-
-    }
+    URL.revokeObjectURL(url);
+}
 
 
-    /* =====================================================
-       INICIALIZAR
-    ===================================================== */
+/* =========================================================
+   CREAR 3 FILAS AL ABRIR
+   ========================================================= */
 
-    document.addEventListener(
-      "DOMContentLoaded",
-      function() {
+agregarCamiseta();
+agregarCamiseta();
+agregarCamiseta();
 
-        /*
-         * Empieza con una camiseta,
-         * igual que en el diseño original.
-         */
-
-        agregarCamiseta();
-
-      }
-    );
-
-  </script>
+</script>
 
 </body>
 </html>
