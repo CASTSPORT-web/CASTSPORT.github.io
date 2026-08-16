@@ -6,10 +6,17 @@
 
 <title>CASTSPORT - Pedidos de Uniformes</title>
 
-<!-- Supabase -->
+<!-- SUPABASE -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<!-- jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+<!-- AutoTable para jsPDF -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
+
 <style>
+
 * {
     box-sizing: border-box;
     margin: 0;
@@ -233,7 +240,6 @@ textarea {
     font-size: 11px;
 }
 
-/* En pantallas pequeñas */
 @media (max-width: 700px) {
 
     .formulario {
@@ -251,6 +257,7 @@ textarea {
         font-size: 11px;
     }
 }
+
 </style>
 </head>
 
@@ -259,12 +266,20 @@ textarea {
 <div class="contenedor">
 
     <!-- ENCABEZADO -->
+
     <div class="encabezado">
+
         <h1>CASTSPORT</h1>
-        <p>Sistema de pedidos y personalización de uniformes</p>
+
+        <p>
+            Sistema de pedidos y personalización de uniformes
+        </p>
+
     </div>
 
+
     <!-- DATOS DEL EQUIPO -->
+
     <div class="tarjeta">
 
         <div class="titulo">
@@ -274,43 +289,62 @@ textarea {
         <div class="formulario">
 
             <div class="campo">
+
                 <label>Nombre del equipo</label>
+
                 <input
                     type="text"
                     id="equipo"
                     placeholder="Nombre del equipo">
+
             </div>
 
+
             <div class="campo">
+
                 <label>Nombre del encargado</label>
+
                 <input
                     type="text"
                     id="encargado"
                     placeholder="Nombre del encargado">
+
             </div>
 
+
             <div class="campo">
+
                 <label>Teléfono / WhatsApp</label>
+
                 <input
                     type="text"
                     id="telefono"
                     placeholder="Número de teléfono">
+
             </div>
 
+
             <div class="campo">
+
                 <label>Tipo de uniforme</label>
+
                 <select id="tipoUniforme">
+
                     <option>Camiseta</option>
                     <option>Conjunto</option>
                     <option>Uniforme completo</option>
+
                 </select>
+
             </div>
 
         </div>
+
     </div>
 
 
     <!-- LISTA DE CAMISETAS -->
+
     <div class="tarjeta">
 
         <div class="titulo">
@@ -323,42 +357,57 @@ textarea {
             type="button"
             class="boton-agregar"
             onclick="agregarCamiseta()">
+
             + Agregar camiseta
+
         </button>
 
+
         <div class="total">
+
             <span>Total de camisetas</span>
+
             <strong id="total">0</strong>
+
         </div>
 
     </div>
 
 
     <!-- OBSERVACIONES -->
+
     <div class="tarjeta">
 
         <div class="titulo">
             📝 Observaciones
         </div>
 
+
         <textarea
             id="observaciones"
             placeholder="Escribe aquí alguna observación del pedido..."></textarea>
+
 
         <button
             type="button"
             id="botonGenerar"
             class="boton-generar"
             onclick="generarPedido()">
+
             ☑ Generar pedido
+
         </button>
+
 
         <button
             type="button"
             class="boton-descargar"
             onclick="descargarPedido()">
+
             📥 Descargar pedido
+
         </button>
+
 
         <div id="estado" class="estado"></div>
 
@@ -366,32 +415,41 @@ textarea {
 
 
     <!-- PIE -->
+
     <div class="pie">
+
         <h2>CASTSPORT</h2>
-        <p>Sistema de pedidos y personalización de uniformes</p>
+
+        <p>
+            Sistema de pedidos y personalización de uniformes
+        </p>
+
     </div>
 
 </div>
 
 
 <script>
+
 /* =========================================================
    SUPABASE
    ========================================================= */
 
-const SUPABASE_URL = "https://gsacpnubhwpmlxtfcgtc.supabase.co";
+const SUPABASE_URL =
+    "https://gsacpnubhwpmlxtfcgtc.supabase.co";
 
 const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_msIUw1EzeJGOIpUSV4EkOA_n2Aimnsw";
 
-const supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_PUBLISHABLE_KEY
-);
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
 
 
 /* =========================================================
-   CONFIGURACIÓN DE TALLAS
+   TALLAS
    ========================================================= */
 
 const tallas = [
@@ -410,24 +468,33 @@ const tallas = [
     "XXL"
 ];
 
+
 let contador = 0;
 
 
 /* =========================================================
-   UTILIDADES
+   ESTADOS
    ========================================================= */
 
 function mostrarEstado(mensaje, tipo) {
-    const estado = document.getElementById("estado");
+
+    const estado =
+        document.getElementById("estado");
 
     estado.textContent = mensaje;
-    estado.className = "estado " + tipo;
+
+    estado.className =
+        "estado " + tipo;
 }
 
+
 function limpiarEstado() {
-    const estado = document.getElementById("estado");
+
+    const estado =
+        document.getElementById("estado");
 
     estado.textContent = "";
+
     estado.className = "estado";
 }
 
@@ -445,11 +512,14 @@ function agregarCamiseta(
 
     contador++;
 
-    const lista = document.getElementById("listaCamisetas");
+    const lista =
+        document.getElementById("listaCamisetas");
 
-    const fila = document.createElement("div");
+    const fila =
+        document.createElement("div");
 
     fila.className = "fila";
+
 
     fila.innerHTML = `
 
@@ -459,46 +529,71 @@ function agregarCamiseta(
             placeholder="Nº"
             value="${numero}">
 
+
         <input
             type="text"
             class="nombre"
             placeholder="Nombre"
             value="${nombre}">
 
-        <select class="talla">
-            <option value="">Talla</option>
 
-            ${tallas.map(t =>
-                `<option value="${t}" ${t === talla ? "selected" : ""}>
+        <select class="talla">
+
+            <option value="">
+                Talla
+            </option>
+
+            ${tallas.map(t => `
+                <option
+                    value="${t}"
+                    ${t === talla ? "selected" : ""}>
                     ${t}
-                </option>`
-            ).join("")}
+                </option>
+            `).join("")}
 
         </select>
 
+
         <select
-            class="genero ${genero === "F" ? "genero-f" : genero === "M" ? "genero-m" : ""}"
+            class="genero ${
+                genero === "F"
+                ? "genero-f"
+                : genero === "M"
+                ? "genero-m"
+                : ""
+            }"
             onchange="cambiarGenero(this)">
 
-            <option value="">Género</option>
+            <option value="">
+                Género
+            </option>
 
-            <option value="F" ${genero === "F" ? "selected" : ""}>
+            <option
+                value="F"
+                ${genero === "F" ? "selected" : ""}>
                 F
             </option>
 
-            <option value="M" ${genero === "M" ? "selected" : ""}>
+            <option
+                value="M"
+                ${genero === "M" ? "selected" : ""}>
                 M
             </option>
 
         </select>
 
+
         <button
             type="button"
             class="boton-eliminar"
             onclick="eliminarCamiseta(this)">
+
             ×
+
         </button>
+
     `;
+
 
     lista.appendChild(fila);
 
@@ -507,26 +602,33 @@ function agregarCamiseta(
 
 
 /* =========================================================
-   CAMBIAR COLOR SEGÚN GÉNERO
+   CAMBIAR COLOR GÉNERO
    ========================================================= */
 
 function cambiarGenero(select) {
 
     select.classList.remove("genero-f");
+
     select.classList.remove("genero-m");
 
+
     if (select.value === "F") {
+
         select.classList.add("genero-f");
+
     }
 
+
     if (select.value === "M") {
+
         select.classList.add("genero-m");
+
     }
 }
 
 
 /* =========================================================
-   ELIMINAR
+   ELIMINAR CAMISETA
    ========================================================= */
 
 function eliminarCamiseta(boton) {
@@ -538,7 +640,7 @@ function eliminarCamiseta(boton) {
 
 
 /* =========================================================
-   ACTUALIZAR TOTAL
+   TOTAL
    ========================================================= */
 
 function actualizarTotal() {
@@ -552,7 +654,7 @@ function actualizarTotal() {
 
 
 /* =========================================================
-   LEER CAMISETAS DEL FORMULARIO
+   OBTENER CAMISETAS
    ========================================================= */
 
 function obtenerCamisetas() {
@@ -560,50 +662,102 @@ function obtenerCamisetas() {
     const filas =
         document.querySelectorAll(".fila");
 
-    return Array.from(filas).map((fila) => {
 
-        return {
-            numero:
-                fila.querySelector(".numero").value.trim(),
+    const camisetas = [];
 
-            nombre:
-                fila.querySelector(".nombre").value.trim(),
 
-            talla:
-                fila.querySelector(".talla").value,
+    filas.forEach((fila) => {
 
-            genero:
-                fila.querySelector(".genero").value
-        };
+        const numero =
+            fila.querySelector(".numero").value.trim();
+
+        const nombre =
+            fila.querySelector(".nombre").value.trim();
+
+        const talla =
+            fila.querySelector(".talla").value;
+
+        const genero =
+            fila.querySelector(".genero").value;
+
+
+        /*
+         * Si la fila está completamente vacía,
+         * no la incluimos.
+         */
+
+        if (
+            !numero &&
+            !nombre &&
+            !talla &&
+            !genero
+        ) {
+
+            return;
+
+        }
+
+
+        camisetas.push({
+
+            numero: numero,
+
+            nombre: nombre,
+
+            talla: talla,
+
+            genero: genero
+
+        });
+
     });
+
+
+    return camisetas;
 }
 
 
 /* =========================================================
-   GENERAR PEDIDO + GUARDAR EN SUPABASE
+   GENERAR / GUARDAR PEDIDO
    ========================================================= */
 
 async function generarPedido() {
 
     limpiarEstado();
 
+
     const boton =
         document.getElementById("botonGenerar");
 
+
     const equipo =
-        document.getElementById("equipo").value.trim();
+        document.getElementById("equipo")
+        .value
+        .trim();
+
 
     const encargado =
-        document.getElementById("encargado").value.trim();
+        document.getElementById("encargado")
+        .value
+        .trim();
+
 
     const telefono =
-        document.getElementById("telefono").value.trim();
+        document.getElementById("telefono")
+        .value
+        .trim();
+
 
     const tipo =
-        document.getElementById("tipoUniforme").value;
+        document.getElementById("tipoUniforme")
+        .value;
+
 
     const observaciones =
-        document.getElementById("observaciones").value.trim();
+        document.getElementById("observaciones")
+        .value
+        .trim();
+
 
     const camisetas =
         obtenerCamisetas();
@@ -621,6 +775,18 @@ async function generarPedido() {
         return;
     }
 
+
+    if (!encargado) {
+
+        mostrarEstado(
+            "Por favor, escribe el nombre del encargado.",
+            "error"
+        );
+
+        return;
+    }
+
+
     if (camisetas.length === 0) {
 
         mostrarEstado(
@@ -632,186 +798,261 @@ async function generarPedido() {
     }
 
 
+    /*
+     * Revisar que las camisetas tengan
+     * los datos necesarios.
+     */
+
+    for (let i = 0; i < camisetas.length; i++) {
+
+        const camiseta =
+            camisetas[i];
+
+
+        if (!camiseta.nombre) {
+
+            mostrarEstado(
+                "La camiseta #" +
+                (i + 1) +
+                " necesita un nombre.",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (!camiseta.talla) {
+
+            mostrarEstado(
+                "Selecciona la talla de " +
+                camiseta.nombre +
+                ".",
+                "error"
+            );
+
+            return;
+        }
+
+
+        if (!camiseta.genero) {
+
+            mostrarEstado(
+                "Selecciona el género de " +
+                camiseta.nombre +
+                ".",
+                "error"
+            );
+
+            return;
+        }
+
+    }
+
+
     /* EVITAR DOBLE CLIC */
 
     boton.disabled = true;
-    boton.textContent = "⏳ Guardando pedido...";
+
+    boton.textContent =
+        "⏳ Guardando pedido...";
 
 
     try {
 
-        /*
-         * 1. GUARDAR EL PEDIDO PRINCIPAL
-         */
+        /* =================================================
+           1. PEDIDO PRINCIPAL
+           ================================================= */
 
-        const { data: pedido, error: errorPedido } =
+        const {
+            data: pedido,
+            error: errorPedido
+        } =
             await supabaseClient
                 .from("pedidos")
                 .insert({
+
                     equipo: equipo,
+
+                    nombre_equipo: equipo,
+
                     encargado: encargado,
+
                     telefono: telefono,
+
                     tipo_uniforme: tipo,
-                    observaciones: observaciones || null
+
+                    observaciones:
+                        observaciones || null
+
                 })
                 .select()
                 .single();
 
 
         if (errorPedido) {
+
             throw errorPedido;
+
         }
 
 
-        /*
-         * 2. PREPARAR LAS CAMISETAS
-         */
+        /* =================================================
+           2. CAMISETAS
+           ================================================= */
 
         const camisetasParaGuardar =
             camisetas.map((camiseta) => {
 
                 return {
+
                     pedido_id: pedido.id,
-                    numero: camiseta.numero || null,
-                    nombre: camiseta.nombre || null,
-                    talla: camiseta.talla || null,
-                    genero: camiseta.genero || null
+
+                    numero:
+                        camiseta.numero || null,
+
+                    nombre:
+                        camiseta.nombre,
+
+                    talla:
+                        camiseta.talla,
+
+                    genero:
+                        camiseta.genero
+
                 };
+
             });
 
 
-        /*
-         * 3. GUARDAR TODAS LAS CAMISETAS
-         */
-
-        const { error: errorCamisetas } =
+        const {
+            error: errorCamisetas
+        } =
             await supabaseClient
                 .from("camisetas")
                 .insert(camisetasParaGuardar);
 
 
         if (errorCamisetas) {
+
             throw errorCamisetas;
+
         }
 
 
-        /*
-         * 4. CONFIRMACIÓN
-         */
+        /* =================================================
+           3. CONFIRMACIÓN
+           ================================================= */
 
         mostrarEstado(
-            "✅ Pedido guardado correctamente en Supabase.",
+            "✅ Pedido guardado correctamente en Supabase. ID: " +
+            pedido.id,
             "exito"
         );
 
 
         /*
-         * 5. RESUMEN
+         * Guardamos el ID para usarlo
+         * también en el PDF.
          */
 
-        let resumen = "";
-
-        resumen += "CASTSPORT\n";
-        resumen += "==============================\n\n";
-
-        resumen += "DATOS DEL EQUIPO\n";
-        resumen += "Equipo: " + equipo + "\n";
-        resumen += "Encargado: " + encargado + "\n";
-        resumen += "Teléfono: " + telefono + "\n";
-        resumen += "Tipo de uniforme: " + tipo + "\n\n";
-
-        resumen += "LISTA DE CAMISETAS\n";
-        resumen += "==============================\n";
-
-        camisetas.forEach((camiseta, index) => {
-
-            resumen +=
-                (index + 1) +
-                ". Nº: " +
-                camiseta.numero +
-                " | Nombre: " +
-                camiseta.nombre +
-                " | Talla: " +
-                camiseta.talla +
-                " | Género: " +
-                camiseta.genero +
-                "\n";
-        });
-
-        resumen += "\n";
-        resumen +=
-            "Total de camisetas: " +
-            camisetas.length +
-            "\n\n";
-
-        resumen += "OBSERVACIONES\n";
-        resumen +=
-            observaciones ||
-            "Sin observaciones";
+        window.ultimoPedidoId =
+            pedido.id;
 
 
-        alert(
-            "PEDIDO GUARDADO\n\n" +
-            "ID del pedido: " +
-            pedido.id +
-            "\n\n" +
-            resumen
-        );
+    }
 
-
-    } catch (error) {
+    catch (error) {
 
         console.error(
             "Error guardando pedido:",
             error
         );
 
+
         mostrarEstado(
             "❌ No se pudo guardar el pedido: " +
-            (error.message || "Error desconocido"),
+            (
+                error.message ||
+                "Error desconocido"
+            ),
             "error"
         );
 
+
         alert(
             "No se pudo guardar el pedido.\n\n" +
-            (error.message || "Error desconocido")
+            (
+                error.message ||
+                "Error desconocido"
+            )
         );
 
-    } finally {
+    }
+
+
+    finally {
 
         boton.disabled = false;
-        boton.textContent = "☑ Generar pedido";
+
+        boton.textContent =
+            "☑ Generar pedido";
+
     }
+
 }
 
 
 /* =========================================================
-   DESCARGAR PEDIDO EN TXT
+   DESCARGAR PEDIDO EN PDF
    ========================================================= */
 
 function descargarPedido() {
 
     const equipo =
-        document.getElementById("equipo").value.trim()
-        || "Sin nombre";
+        document.getElementById("equipo")
+        .value
+        .trim();
+
 
     const encargado =
-        document.getElementById("encargado").value.trim()
-        || "";
+        document.getElementById("encargado")
+        .value
+        .trim();
+
 
     const telefono =
-        document.getElementById("telefono").value.trim()
-        || "";
+        document.getElementById("telefono")
+        .value
+        .trim();
+
 
     const tipo =
-        document.getElementById("tipoUniforme").value;
+        document.getElementById("tipoUniforme")
+        .value;
+
 
     const observaciones =
-        document.getElementById("observaciones").value.trim()
+        document.getElementById("observaciones")
+        .value
+        .trim()
         || "Sin observaciones";
+
 
     const camisetas =
         obtenerCamisetas();
+
+
+    /* VALIDACIÓN */
+
+    if (!equipo) {
+
+        alert(
+            "Primero escribe el nombre del equipo."
+        );
+
+        return;
+    }
 
 
     if (camisetas.length === 0) {
@@ -824,120 +1065,704 @@ function descargarPedido() {
     }
 
 
-    let contenido = "";
+    /*
+     * Comprobar datos.
+     */
 
-    contenido += "CASTSPORT\n";
-    contenido +=
-        "SISTEMA DE PEDIDOS Y PERSONALIZACIÓN DE UNIFORMES\n";
-    contenido +=
-        "===============================================\n\n";
+    for (let i = 0; i < camisetas.length; i++) {
 
-    contenido += "DATOS DEL EQUIPO\n";
-    contenido +=
-        "-----------------------------------------------\n";
+        if (!camisetas[i].nombre) {
 
-    contenido +=
-        "Nombre del equipo: " +
-        equipo +
-        "\n";
+            alert(
+                "La camiseta #" +
+                (i + 1) +
+                " necesita un nombre."
+            );
 
-    contenido +=
-        "Nombre del encargado: " +
-        encargado +
-        "\n";
-
-    contenido +=
-        "Teléfono / WhatsApp: " +
-        telefono +
-        "\n";
-
-    contenido +=
-        "Tipo de uniforme: " +
-        tipo +
-        "\n\n";
-
-    contenido += "LISTA DE CAMISETAS\n";
-    contenido +=
-        "-----------------------------------------------\n";
+            return;
+        }
 
 
-    camisetas.forEach((camiseta, index) => {
+        if (!camisetas[i].talla) {
 
-        contenido +=
-            (index + 1) +
-            ". Nº: " +
-            camiseta.numero +
-            " | Nombre: " +
-            camiseta.nombre +
-            " | Talla: " +
-            camiseta.talla +
-            " | Género: " +
-            camiseta.genero +
-            "\n";
-    });
+            alert(
+                "Selecciona la talla de " +
+                camisetas[i].nombre
+            );
+
+            return;
+        }
 
 
-    contenido += "\n";
+        if (!camisetas[i].genero) {
 
-    contenido +=
-        "Total de camisetas: " +
-        camisetas.length +
-        "\n\n";
+            alert(
+                "Selecciona el género de " +
+                camisetas[i].nombre
+            );
 
-    contenido += "OBSERVACIONES\n";
+            return;
+        }
 
-    contenido +=
-        "-----------------------------------------------\n";
-
-    contenido +=
-        observaciones +
-        "\n\n";
-
-    contenido +=
-        "===============================================\n";
-
-    contenido += "CASTSPORT\n";
+    }
 
 
-    const archivo =
-        new Blob(
-            [contenido],
-            {
-                type: "text/plain;charset=utf-8"
-            }
+    /* =================================================
+       CREAR PDF
+       ================================================= */
+
+    const {
+        jsPDF
+    } = window.jspdf;
+
+
+    const doc =
+        new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "a4"
+        });
+
+
+    const ancho =
+        doc.internal.pageSize.getWidth();
+
+
+    /* =================================================
+       ENCABEZADO NEGRO
+       ================================================= */
+
+    doc.setFillColor(
+        17,
+        17,
+        17
+    );
+
+
+    doc.roundedRect(
+        15,
+        12,
+        ancho - 30,
+        32,
+        4,
+        4,
+        "F"
+    );
+
+
+    doc.setTextColor(
+        255,
+        255,
+        255
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(24);
+
+
+    doc.text(
+        "CASTSPORT",
+        ancho / 2,
+        25,
+        {
+            align: "center"
+        }
+    );
+
+
+    doc.setFontSize(10);
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.text(
+        "Sistema de pedidos y personalización de uniformes",
+        ancho / 2,
+        33,
+        {
+            align: "center"
+        }
+    );
+
+
+    /* =================================================
+       NÚMERO Y FECHA
+       ================================================= */
+
+    const fecha =
+        new Date();
+
+
+    const fechaTexto =
+        fecha.toLocaleString(
+            "es-PE"
         );
 
 
-    const url =
-        URL.createObjectURL(archivo);
+    doc.setTextColor(
+        40,
+        40,
+        40
+    );
 
-    const enlace =
-        document.createElement("a");
 
-    enlace.href = url;
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
 
-    enlace.download =
-        "pedido-" +
-        equipo.replace(/[^a-z0-9]/gi, "-") +
-        ".txt";
 
-    document.body.appendChild(enlace);
+    doc.setFontSize(11);
 
-    enlace.click();
 
-    document.body.removeChild(enlace);
+    doc.text(
+        "PEDIDO",
+        15,
+        54
+    );
 
-    URL.revokeObjectURL(url);
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.text(
+        window.ultimoPedidoId
+            ? "#" + window.ultimoPedidoId
+            : "Pendiente de guardar",
+        40,
+        54
+    );
+
+
+    doc.text(
+        "Fecha:",
+        ancho - 65,
+        54
+    );
+
+
+    doc.text(
+        fechaTexto,
+        ancho - 15,
+        54,
+        {
+            align: "right"
+        }
+    );
+
+
+    /* =================================================
+       DATOS DEL EQUIPO
+       ================================================= */
+
+    doc.setFillColor(
+        240,
+        243,
+        246
+    );
+
+
+    doc.roundedRect(
+        15,
+        62,
+        ancho - 30,
+        45,
+        3,
+        3,
+        "F"
+    );
+
+
+    doc.setTextColor(
+        20,
+        20,
+        20
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(14);
+
+
+    doc.text(
+        "DATOS DEL EQUIPO",
+        20,
+        72
+    );
+
+
+    doc.setFontSize(9);
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.text(
+        "Nombre del equipo:",
+        20,
+        82
+    );
+
+
+    doc.text(
+        "Encargado:",
+        110,
+        82
+    );
+
+
+    doc.text(
+        "Teléfono / WhatsApp:",
+        20,
+        94
+    );
+
+
+    doc.text(
+        "Tipo de uniforme:",
+        110,
+        94
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.text(
+        equipo || "-",
+        20,
+        88
+    );
+
+
+    doc.text(
+        encargado || "-",
+        110,
+        88
+    );
+
+
+    doc.text(
+        telefono || "-",
+        20,
+        100
+    );
+
+
+    doc.text(
+        tipo || "-",
+        110,
+        100
+    );
+
+
+    /* =================================================
+       LISTA DE CAMISETAS
+       ================================================= */
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(14);
+
+
+    doc.text(
+        "LISTA DE CAMISETAS",
+        15,
+        119
+    );
+
+
+    const filasPDF =
+        camisetas.map(
+            (camiseta, index) => [
+
+                index + 1,
+
+                camiseta.numero || "-",
+
+                camiseta.nombre || "-",
+
+                camiseta.talla || "-",
+
+                camiseta.genero || "-"
+
+            ]
+        );
+
+
+    doc.autoTable({
+
+        startY: 124,
+
+        head: [[
+            "#",
+            "Nº",
+            "Nombre",
+            "Talla",
+            "Género"
+        ]],
+
+        body: filasPDF,
+
+        theme: "grid",
+
+        styles: {
+
+            font: "helvetica",
+
+            fontSize: 10,
+
+            cellPadding: 4,
+
+            textColor: [
+                30,
+                30,
+                30
+            ]
+
+        },
+
+        headStyles: {
+
+            fillColor: [
+                17,
+                17,
+                17
+            ],
+
+            textColor: [
+                255,
+                255,
+                255
+            ],
+
+            fontStyle: "bold"
+
+        },
+
+        alternateRowStyles: {
+
+            fillColor: [
+                245,
+                247,
+                249
+            ]
+
+        },
+
+        columnStyles: {
+
+            0: {
+                cellWidth: 12,
+                halign: "center"
+            },
+
+            1: {
+                cellWidth: 22,
+                halign: "center"
+            },
+
+            2: {
+                cellWidth: "auto"
+            },
+
+            3: {
+                cellWidth: 25,
+                halign: "center"
+            },
+
+            4: {
+                cellWidth: 25,
+                halign: "center"
+            }
+
+        }
+
+    });
+
+
+    /* =================================================
+       TOTAL
+       ================================================= */
+
+    let posicionY =
+        doc.lastAutoTable.finalY + 10;
+
+
+    doc.setFillColor(
+        237,
+        241,
+        245
+    );
+
+
+    doc.roundedRect(
+        15,
+        posicionY,
+        ancho - 30,
+        12,
+        2,
+        2,
+        "F"
+    );
+
+
+    doc.setTextColor(
+        20,
+        20,
+        20
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(10);
+
+
+    doc.text(
+        "TOTAL DE CAMISETAS",
+        20,
+        posicionY + 8
+    );
+
+
+    doc.text(
+        String(camisetas.length),
+        ancho - 20,
+        posicionY + 8,
+        {
+            align: "right"
+        }
+    );
+
+
+    /* =================================================
+       OBSERVACIONES
+       ================================================= */
+
+    posicionY += 22;
+
+
+    doc.setFontSize(14);
+
+
+    doc.text(
+        "OBSERVACIONES",
+        15,
+        posicionY
+    );
+
+
+    posicionY += 5;
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(10);
+
+
+    const textoObservaciones =
+        doc.splitTextToSize(
+            observaciones,
+            ancho - 40
+        );
+
+
+    const altoObservaciones =
+        Math.max(
+            25,
+            textoObservaciones.length * 5 + 12
+        );
+
+
+    doc.setFillColor(
+        248,
+        249,
+        250
+    );
+
+
+    doc.setDrawColor(
+        210,
+        210,
+        210
+    );
+
+
+    doc.roundedRect(
+        15,
+        posicionY,
+        ancho - 30,
+        altoObservaciones,
+        3,
+        3,
+        "FD"
+    );
+
+
+    doc.text(
+        textoObservaciones,
+        20,
+        posicionY + 9
+    );
+
+
+    /* =================================================
+       PIE
+       ================================================= */
+
+    const altoPagina =
+        doc.internal.pageSize.getHeight();
+
+
+    doc.setFillColor(
+        17,
+        17,
+        17
+    );
+
+
+    doc.roundedRect(
+        15,
+        altoPagina - 32,
+        ancho - 30,
+        20,
+        3,
+        3,
+        "F"
+    );
+
+
+    doc.setTextColor(
+        255,
+        255,
+        255
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
+    doc.setFontSize(12);
+
+
+    doc.text(
+        "CASTSPORT",
+        ancho / 2,
+        altoPagina - 22,
+        {
+            align: "center"
+        }
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
+    );
+
+
+    doc.setFontSize(7);
+
+
+    doc.text(
+        "Sistema de pedidos y personalización de uniformes",
+        ancho / 2,
+        altoPagina - 16,
+        {
+            align: "center"
+        }
+    );
+
+
+    /* =================================================
+       DESCARGAR
+       ================================================= */
+
+    const nombreArchivo =
+        equipo
+            .replace(
+                /[^a-z0-9áéíóúñü]/gi,
+                "-"
+            )
+            .replace(
+                /-+/g,
+                "-"
+            );
+
+
+    const idArchivo =
+        window.ultimoPedidoId
+            ? "-pedido-" +
+              window.ultimoPedidoId
+            : "";
+
+
+    doc.save(
+        "CASTSPORT-" +
+        nombreArchivo +
+        idArchivo +
+        ".pdf"
+    );
+
 }
 
 
 /* =========================================================
-   CREAR 3 FILAS AL ABRIR
+   CREAR 3 FILAS INICIALES
    ========================================================= */
 
 agregarCamiseta();
+
 agregarCamiseta();
+
 agregarCamiseta();
+
+
+/* =========================================================
+   ID DEL ÚLTIMO PEDIDO
+   ========================================================= */
+
+window.ultimoPedidoId = null;
 
 </script>
 
