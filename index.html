@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1203,8 +1204,10 @@ function descargarPedido() {
         new Date();
 
 
+    /* CORRECCIÓN DE FECHA */
+
     const fechaTexto =
-        fecha.toLocaleString(
+        fecha.toLocaleDateString(
             "es-PE"
         );
 
@@ -1247,10 +1250,24 @@ function descargarPedido() {
     );
 
 
+    /* FECHA CORREGIDA */
+
+    doc.setFont(
+        "helvetica",
+        "bold"
+    );
+
+
     doc.text(
         "Fecha:",
-        ancho - 65,
+        ancho - 75,
         54
+    );
+
+
+    doc.setFont(
+        "helvetica",
+        "normal"
     );
 
 
@@ -1768,3 +1785,4 @@ window.ultimoPedidoId = null;
 
 </body>
 </html>
+```
